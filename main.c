@@ -82,11 +82,14 @@ int main()
     cy_rslt_t result ;
 
     /* This enables RTOS aware debugging in OpenOCD */
-    uxTopUsedPriority = configMAX_PRIORITIES - 1 ;
+    uxTopUsedPriority = configMAX_PRIORITIES - 1;
 
     /* Initialize the board support package */
     result = cybsp_init() ;
-    CY_ASSERT(result == CY_RSLT_SUCCESS) ;
+    CY_ASSERT(result == CY_RSLT_SUCCESS);
+    
+    /* To avoid compiler warnings. */
+    (void) result;
 
     /* Enable global interrupts */
     __enable_irq();

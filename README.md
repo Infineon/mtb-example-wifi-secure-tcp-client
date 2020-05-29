@@ -9,7 +9,7 @@ This example uses the [Wi-Fi Middleware Core](https://github.com/cypresssemicond
 - [ModusToolbox™ software](https://www.cypress.com/products/modustoolbox-software-environment) v2.1
 - Programming Language: C
 - Supported Toolchains: Arm® GCC, IAR
-- Associated Parts: All [PSoC 6 MCU](http://www.cypress.com/PSoC6) parts with SDIO, [CYW43012](https://www.cypress.com/documentation/product-overviews/cypress-cyw43012), [CYW4343W](https://www.cypress.com/documentation/datasheets/cyw4343w-single-chip-80211-bgn-macbasebandradio-bluetooth-41)
+- Associated Parts: All [PSoC® 6 MCU](http://www.cypress.com/PSoC6) parts with SDIO, [CYW43012](https://www.cypress.com/documentation/product-overviews/cypress-cyw43012), [CYW4343W](https://www.cypress.com/documentation/datasheets/cyw4343w-single-chip-80211-bgn-macbasebandradio-bluetooth-41)
 
 ## Supported Kits
 
@@ -55,7 +55,9 @@ For more details, see the Eclipse IDE for ModusToolbox User Guide: *{ModusToolbo
 
 1. Download and unzip this repository onto your local machine, or clone the repository.
 
-2. Open a CLI terminal and navigate to the application folder. On Linux and macOS, you can use any terminal application. On Windows, navigate to the modus-shell directory (*{ModusToolbox install directory}/tools_\<version>/modus-shell*) and run *Cygwin.bat*.
+2. Open a CLI terminal and navigate to the application folder.
+
+On Linux and macOS, you can use any terminal application. On Windows, navigate to the modus-shell directory (*{ModusToolbox install directory}/tools_\<version>/modus-shell*) and run *Cygwin.bat*.
 
 3. Import the required libraries by executing the `make getlibs` command.
 
@@ -67,7 +69,7 @@ For more details, see the Eclipse IDE for ModusToolbox User Guide: *{ModusToolbo
 
 3. Follow the instructions displayed in the terminal to create or import the application as an IDE project.
 
-For more details, see the *Exporting to IDEs* section of the ModusToolbox User Guide: *{ModusToolbox install directory}/ide_{version}/docs/mtb_user_guide.pdf*.
+For more details, see the "Exporting to IDEs" section of the ModusToolbox User Guide: *{ModusToolbox install directory}/ide_{version}/docs/mtb_user_guide.pdf*.
 
 ## Operation
 
@@ -75,7 +77,7 @@ For more details, see the *Exporting to IDEs* section of the ModusToolbox User G
 
 2. Modify `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY_TYPE` macros to match with that of the Wi-Fi network credentials that you want to connect. These macros are defined in the *network_credentials.h* file. Ensure that the Wi-Fi network that you are connecting to is configured as a private network for the proper functioning of this example.
 
-3. Ensure that your computer is connected to the same Wi-Fi access point that you configured in step 2.
+3. Ensure your computer is connected to the same Wi-Fi access point that you have configured in step 2.
 
 4. Determine the computer's IP address.
 
@@ -97,7 +99,7 @@ For more details, see the *Exporting to IDEs* section of the ModusToolbox User G
 
 7. Ensure Python interperter (see **Software Setup**) is installed on your computer
 
-8. Open a command shell from the project directory and run the python TCP secure server (*tcp_secure_server.py* ) . The python script is located under *{project directory}\python-secure-tcp-server*. Note that the script will not run in the *modus-shell*. In the command shell opened in the project directory, type in the following command:
+8. Open a command shell from the project directory and run the python TCP secure server (*tcp_secure_server.py* ) . The python script is located under *{project directory}\python-secure-tcp-server*. In the command shell opened in the project directory, type in the following command:
 
    ```
    python tcp_secure_server.py
@@ -149,7 +151,7 @@ For more details, see the *Exporting to IDEs* section of the ModusToolbox User G
 
 ## Debugging
 
-You can debug the example to step through the code. In the IDE, use the **\<Application Name> Debug (KitProg3)** configuration in the **Quick Panel**. For more details, see the *Program and Debug* section in the Eclipse IDE for ModusToolbox User Guide: *{ModusToolbox install directory}/ide_{version}/docs/mt_ide_user_guide.pdf*.
+You can debug the example to step through the code. In the IDE, use the **\<Application Name> Debug (KitProg3)** configuration in the **Quick Panel**. For more details, see the "Program and Debug" section in the Eclipse IDE for ModusToolbox User Guide: *{ModusToolbox install directory}/ide_{version}/docs/mt_ide_user_guide.pdf*.
 
 ## Design and Implementation
 
@@ -221,7 +223,7 @@ The *client.crt* file is your clients's certificate and *client.key* is your cli
 | Cypress Hardware Abstraction Layer (HAL) Library and docs          | [psoc6hal](https://github.com/cypresssemiconductorco/psoc6hal) on GitHub |
 | RetargetIO - A utility library to retarget the standard input/output (STDIO) messages to a UART port | [retarget-io](https://github.com/cypresssemiconductorco/retarget-io) on GitHub |
 | **Middleware**                                               |                                                              |
-| Wi-Fi Middleware Core  libraray                                    | [wifi-mw-core](https://github.com/cypresssemiconductorco/wifi-mw-core) on GitHub |
+| Wi-Fi Middleware Core  library                                    | [wifi-mw-core](https://github.com/cypresssemiconductorco/wifi-mw-core) on GitHub |
 | CapSense library and docs                                    | [capsense](https://github.com/cypresssemiconductorco/capsense) on GitHub |
 | Links to all PSoC 6 MCU Middleware                           | [psoc6-middleware](https://github.com/cypresssemiconductorco/psoc6-middleware) on GitHub |
 | **Tools**                                                    |                                                              |
@@ -241,13 +243,13 @@ Document Title: CE229252 - AnyCloud Example: Secure TCP Client
 | Version | Description of Change |
 | ------- | --------------------- |
 | 1.0.0   | New code example      |
-| 1.1.0   | Updated for ModusToobox 2.1. <br>Code updated to use Cypress Secure Sockets and Wi-Fi Connection Manager libraries.     |
-
+| 1.1.0   | Updated for ModusToobox 2.1. <br>Code updated to use Cypress Secure Sockets and Wi-Fi Connection Manager libraries. |
+| 1.2.0   | Makefile updated to sync with BSP changes. <br>Code updated to use binary semaphore. |
 ------
 
 All other trademarks or registered trademarks referenced herein are the property of their respective owners.
 
-![Banner](images/Banner.png)
+![banner](images/footer_banner.png)
 
 -------------------------------------------------------------------------------
 
