@@ -42,26 +42,47 @@
 /*******************************************************************************
 * Macros
 ********************************************************************************/
-#define MAKE_IPV4_ADDRESS(a, b, c, d)     ((((uint32_t) d) << 24) | \
-                                          (((uint32_t) c) << 16) | \
-                                          (((uint32_t) b) << 8) |\
-                                          ((uint32_t) a))
+/* Set this macro to '1' to enable IPv6 protocol. Default value is '0' to use
+ * IPv4 protocol.
+ */
+#define USE_IPV6_ADDRESS                      (0)
+
+#if(USE_IPV6_ADDRESS)
+    /* Converts a 16-bit value from host byte order (little-endian) to network byte order (big-endian) */
+    #define HTONS(x) ( ( ( (x) & 0x0000FF00) >> 8 ) | ((x) & 0x000000FF) << 8 )
+
+    #define MAKE_IPV6_ADDRESS(a, b, c, d, e, f, g, h) { \
+                                                        ( (uint32_t) (HTONS(a)) | ( (uint32_t) (HTONS(b)) << 16 ) ), \
+                                                        ( (uint32_t) (HTONS(c)) | ( (uint32_t) (HTONS(d)) << 16 ) ), \
+                                                        ( (uint32_t) (HTONS(e)) | ( (uint32_t) (HTONS(f)) << 16 ) ), \
+                                                        ( (uint32_t) (HTONS(g)) | ( (uint32_t) (HTONS(h)) << 16 ) ), \
+                                                      }
+#else
+    #define MAKE_IPV4_ADDRESS(a, b, c, d)     ((((uint32_t) d) << 24) | \
+                                              (((uint32_t) c) << 16) | \
+                                              (((uint32_t) b) << 8) |\
+                                              ((uint32_t) a))
+#endif /* USE_IPV6_ADDRESS */
 
 /* Change the server IP address to match the TCP server address (IP address
  * of the PC).
  */
-#define TCP_SERVER_IP_ADDRESS             MAKE_IPV4_ADDRESS(192, 168, 18, 9)
+#if(USE_IPV6_ADDRESS)
+    #define TCP_SERVER_IP_ADDRESS             MAKE_IPV6_ADDRESS(0xFE80, 0, 0 ,0, 0xEC98, 0xA70, 0x1B93, 0x18CA)
+#else
+    #define TCP_SERVER_IP_ADDRESS             MAKE_IPV4_ADDRESS(192, 168, 18, 9)
+#endif
 
-#define TCP_SERVER_PORT                   50007
+#define TCP_SERVER_PORT                       (50007)
 
 /* Maximum number of connection retries to the TCP server. */
-#define MAX_TCP_SERVER_CONN_RETRIES       (5)
+#define MAX_TCP_SERVER_CONN_RETRIES           (5)
 
 /* Length of the TCP data packet. */
-#define MAX_TCP_DATA_PACKET_LENGTH        (20)
+#define MAX_TCP_DATA_PACKET_LENGTH            (20)
 
 /* Length of the LED ON/OFF command issued from the TCP server. */
-#define TCP_LED_CMD_LEN                   (1)
+#define TCP_LED_CMD_LEN                       (1)
 
 /*******************************************************************************
 * Function Prototype

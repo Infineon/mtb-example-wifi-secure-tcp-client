@@ -1,5 +1,5 @@
 #******************************************************************************
-# File Name:   tcp_secure_server.py
+# File Name:   tcp_secure_server_ipv6.py
 #
 # Description: A simple secure TCP server for demonstrating TCP usage.
 # 
@@ -42,63 +42,74 @@ import optparse
 import time
 import sys
 
+host = ''       # Symbolic name meaning the local host 
+port = 50007    # Arbitrary non-privileged port
 
-def echo_server(host, port):
-    print("==========================")
-    print("TCP Secure Server")
-    print("==========================")
+# If argument passed is ipv6, use IPv6 addressing mode.
+if ( len(sys.argv) > 1 and sys.argv[1] == "ipv6" ):    
+    print("=============================================================================")
+    print("TCP Secure Server (IPv6 addressing mode)")
+    print("=============================================================================")
+    s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+# If any argument other than ipv6 is passed, use  IPv4 addessing mode.
+else :
+    print("=============================================================================")
+    print("TCP Secure Server (IPv4 addressing mode)")
+    print("=============================================================================")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+try:
+    s.bind((host, port))
+    s.listen(1)
+except socket.error as msg:
+    print("ERROR: ", msg)
+    s.close()
+    s = None
+
+if s is None:
+    sys.exit(1)
+
+while 1:
+    print("Listening on port: %d"%(port))
+    data_len = 0
     try:
-        s.bind((host, port))
-        s.listen(1)
-    except socket.error as msg:
-        print("ERROR: ", msg)
+        conn, addr = s.accept()
+        connstream = ssl.wrap_socket(conn,
+                             server_side=True,
+                             certfile="server.crt",
+                             keyfile="server.key",
+                             ca_certs='root_ca.crt',
+                             cert_reqs=ssl.CERT_REQUIRED)
+    except KeyboardInterrupt:
+        print("Closing Connection")
         s.close()
         s = None
-
-    if s is None:
         sys.exit(1)
 
-    while 1:
-        print("Listening on: %s:%d"%(host, port))
-        data_len = 0
-        try:
-            conn, addr = s.accept()
-            connstream = ssl.wrap_socket(conn,
-                                 server_side=True,
-                                 certfile="server.crt",
-                                 keyfile="server.key", ca_certs='root_ca.crt', cert_reqs=ssl.CERT_REQUIRED)
-        except KeyboardInterrupt:
-            print("Closing Connection")
-            s.close()
-            s = None
-            sys.exit(1)
+    print('Incoming connection accepted: ', addr)
 
-        print('Incoming connection accepted: ', addr)
-
-        try:
-            while 1:
-                data = input("Enter your option: '1' to turn ON LED, 0 to trun OFF LED and Press the 'Enter' key: ")
+    try:
+        while 1:
+            data = input("Enter your option: '1' to turn ON LED, 0 to turn"\
+                         " OFF LED and Press the 'Enter' key: ")
+            if(data == ""):
+                print("No option entered!")
+            else:
                 connstream.write(data.encode())
                 data = connstream.read(4096)
                 if not data: break
                 print("Acknowledgement from TCP Client:", data.decode('utf-8'))
                 print("")
-                
-        except KeyboardInterrupt:
-            print("Closing Connection")
-            s.close()
-            s = None
-            sys.exit(1)
-
+            
+    except KeyboardInterrupt:
         conn.close()
+        s.close()
+        s = None
+        print("\nConnection Closed")
+        sys.exit(1)
 
-if __name__ == '__main__':
-    parser = optparse.OptionParser()
-    parser.add_option("-p", "--port", dest="port", type="int", default=50007, help="Port to listen on [default: %default].")
-    parser.add_option("--hostname", dest="hostname", default="", help="Hostname to listen on.")
-
-    (options, args) = parser.parse_args()
-
-    echo_server(options.hostname, options.port)
+# [] END OF FILE
+ 

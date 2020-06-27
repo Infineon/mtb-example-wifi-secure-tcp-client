@@ -1,6 +1,6 @@
 # AnyCloud Example: Secure TCP Client
 
-This code example demonstrates the implementation of a secure TCP client with PSoC® 6 MCU and CYW43xxx connectivity devices. In this example, TCP client establishes a secure connection with a TCP server through SSL handshake. Once the SSL handshake completes successfully, the TCP client controls the user LED, turning ON or OFF, based on the command received from the TCP server.
+This code example demonstrates the implementation of a secure TCP Client with PSoC® 6 MCU and CYW43xx connectivity devices. In this example, a TCP Client establishes a secure connection with a TCP Server through a SSL handshake. Once the SSL handshake completes successfully, the TCP Client turns ON or OFF the user LED based on the command received from the TCP Server. Additionally, this code example can be configured to work with IPv4 or link-local IPv6 addressing mode.
 
 This example uses the [Wi-Fi Middleware Core](https://github.com/cypresssemiconductorco/wifi-mw-core) library of the AnyCloud SDK. This library enables Wi-Fi based application development by bundling together various other libraries - FreeRTOS, Wi-Fi Host Driver (WHD), lwIP TCP/IP stack, Mbed TLS, and Cypress secure socket. The Cypress secure socket library provides an easy-to-use API by abstracting the network stack (lwIP) and the security stack (Mbed TLS).
 
@@ -14,7 +14,6 @@ This example uses the [Wi-Fi Middleware Core](https://github.com/cypresssemicond
 ## Supported Kits
 
 - [PSoC 6 Wi-Fi BT Prototyping Kit](https://www.cypress.com/CY8CPROTO-062-4343W) (CY8CPROTO-062-4343W) - Default target
-
 - [PSoC 62S2 Wi-Fi BT Pioneer Kit](https://www.cypress.com/CY8CKIT-062S2-43012) (CY8CKIT-062S2-43012)
 
 ## Hardware Setup
@@ -57,7 +56,7 @@ For more details, see the Eclipse IDE for ModusToolbox User Guide: *{ModusToolbo
 
 2. Open a CLI terminal and navigate to the application folder.
 
-On Linux and macOS, you can use any terminal application. On Windows, navigate to the modus-shell directory (*{ModusToolbox install directory}/tools_\<version>/modus-shell*) and run *Cygwin.bat*.
+   On Linux and macOS, you can use any terminal application. On Windows, navigate to the modus-shell directory (*{ModusToolbox install directory}/tools_\<version>/modus-shell*) and run *Cygwin.bat*.
 
 3. Import the required libraries by executing the `make getlibs` command.
 
@@ -75,13 +74,13 @@ For more details, see the "Exporting to IDEs" section of the ModusToolbox User G
 
 1. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector.
 
-2. Modify `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY_TYPE` macros to match with that of the Wi-Fi network credentials that you want to connect. These macros are defined in the *network_credentials.h* file. Ensure that the Wi-Fi network that you are connecting to is configured as a private network for the proper functioning of this example.
+2. Modify `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY_TYPE` macros to match the credentials of the Wi-Fi network that you want to connect. These macros are defined in the *network_credentials.h* file. Ensure that the Wi-Fi network that you are connecting to is configured as a private network for the proper functioning of this example.
 
 3. Ensure your computer is connected to the same Wi-Fi access point that you have configured in step 2.
 
 4. Determine the computer's IP address.
 
-   Type the following command in the command shell based on your operating system to determine the IP address:
+   To determine the IP address, type the following command in the command shell based on your operating system:
 
    Windows: `ipconfig`
 
@@ -89,24 +88,49 @@ For more details, see the "Exporting to IDEs" section of the ModusToolbox User G
 
    Mac OS: `ifconfig |grep inet`
    
-5. Change the `TCP_SERVER_IP_ADDRESS` macro defined in the *secure_tcp_client.h* file to match with the computer's IP address. For example, if your computer's IP address is 
-   192.168.18.9, then update the macro as shown below:
-    ```
-        #define TCP_SERVER_IP_ADDRESS             MAKE_IPV4_ADDRESS(192, 168, 18, 9)      
-    ```
-   Note that the TCP client connects to a fixed port number "50007" of the TCP server used with this example and this is not user configurable.
+5. Configure the IP addressing mode. By default, IPv4 based adderessing is used. If you want to use IPv6 addressing mode, set the `USE_IPV6_ADDRESS` macro defined in the *secure_tcp_client.h* file as shown below:
+
+   ```
+      #define USE_IPV6_ADDRESS				      (1)      
+   ```
+
+6. Change the `TCP_SERVER_IP_ADDRESS` macro defined in the *secure_tcp_client.h* file to match with the computer's IP address. Update the macro based on the addressing mode (IPv4 or link-local IPv6) that you want to use.
+
+   **For IPv4-based Addressing:**
+
+   For example, if your computer's IPv4 address is 192.168.18.9, then update the macro as shown below:
+
+      ```
+         #define TCP_SERVER_IP_ADDRESS             MAKE_IPV4_ADDRESS(192, 168, 18, 9)      
+      ```
+
+   **For link-local IPv6-based Addressing:**
+   
+   For example, if your computer's link-local IPv6 address is fe80::ec98:a70:1b93:18ca, then update the macro as shown below:
+
+      ```
+         TCP_SERVER_IP_ADDRESS			  MAKE_IPV6_ADDRESS(0xFE80, 0, 0 ,0, 0xEC98, 0xA70, 0x1B93, 0x18CA)      
+      ```
+
 6. Open a terminal program and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
 
 7. Ensure Python interperter (see **Software Setup**) is installed on your computer
 
-8. Open a command shell from the project directory and run the python TCP secure server (*tcp_secure_server.py* ) . The python script is located under *{project directory}\python-secure-tcp-server*. In the command shell opened in the project directory, type in the following command:
+8. Open a command shell from the project directory and run the python TCP secure server. The python script is located under *{project directory}\python-secure-tcp-server*. In the command shell opened in the project directory, type in the following command based on the IP addressing mode configuration:
+
+   **For IPv4-based Addressing:**
 
    ```
    python tcp_secure_server.py
    ```
 
+   **For link-local IPv6-based Addressing:**
+   
+   ```
+   python tcp_secure_server.py ipv6
+   ```
 
-   **Note:** Ensure that the firewall settings of your computer allow access to the Python software so as to allow communication with the TCP client. For more details on enabling Python access, see this community [thread](https://community.cypress.com/thread/53662)
+   **Note:** Ensure that the firewall settings of your computer allow access to the Python software so as to allow communication with the TCP Client. For more details on enabling Python access, see this community [thread](https://community.cypress.com/thread/53662)
 
 
 9. Program the board.
@@ -118,37 +142,50 @@ For more details, see the "Exporting to IDEs" section of the ModusToolbox User G
 
       2. In the **Quick Panel**, scroll down, and click **\<Application Name> Program (KitProg3)**.
 
-
    - **Using CLI**:
 
      From the terminal, execute the `make program` command to build and program the application using the default toolchain to the default target. You can specify a target and toolchain manually:
+      ```
+      make program TARGET=<BSP> TOOLCHAIN=<toolchain>
+      ```
 
-   ```
-   make program TARGET=<BSP> TOOLCHAIN=<toolchain>
-   ```
+      Example:
+      ```
+      make program TARGET=CY8CPROTO-062-4343W TOOLCHAIN=GCC_ARM
+      ```
 
-   Example:
+      **Note**:  Before building the application, ensure that the *deps* folder contains the BSP file (*TARGET_xxx.lib*) corresponding to the TARGET. Execute the `make getlibs` command to fetch the BSP contents before building the application.
+     
+      After programming, the application starts automatically. Confirm that the text, shown in Figure 1 (for IPv4 address) or Figure 2 (for IPv6 address), is displayed on the UART terminal. Note that Wi-Fi SSID and the IP address will be different based on the network that you have connected to.
 
+      **Figure 1. UART Terminal Showing Wi-Fi Connectivity Status (IPv4 Address)**
+        
+      ![Figure 1](images/wifi-conn-status-ipv4.png)
+        
+      **Figure 2. UART Terminal Showing Wi-Fi Connectivity Status (IPv6 Address)**
+        
+      ![Figure 1](images/wifi-conn-status-ipv6.png)
 
-   ```
-   make program TARGET=CY8CPROTO-062-4343W TOOLCHAIN=GCC_ARM
-   ```
+10. From the Python secure TCP Server, send the command to turn the LED ON or OFF to the TCP Client( '0' to turn LED OFF and '1' to turn LED ON). Observe the user LED (CYBSP_USER_LED) turning ON/OFF on the board.
 
+      **Figure 3. LED Status on TCP Server (IPv4 Addressing Mode)**
 
-   **Note**:  Before building the application, ensure that the *deps* folder contains the BSP file (*TARGET_xxx.lib*) corresponding to the TARGET. Execute the `make getlibs` command to fetch the BSP contents before building the application.
+      ![Figure 3](images/tcp-server-ipv4-output.png)
 
-   After programming, the application starts automatically. Confirm that the text, shown in Figure 1, is displayed on the UART terminal. Note that Wi-Fi SSID and the IP address will be different based on the network that you have connected to.
+      **Figure 4. LED Status on TCP Client (IPv4 Addressing Mode)**
 
-   **Figure 1. UART Terminal Showing Wi-Fi Connectivity Status**
+      ![Figure 4](images/tcp-client-ipv4-output.png)
 
-   ![Figure 1](images/uart-terminal-output.png)
+      **Figure 5. LED Status on TCP Server (IPv6 Addressing Mode)**
 
-10. From the Python secure TCP server, send the command to turn the LED ON or OFF  to the TCP client( '0' to turn LED OFF and '1' to turn LED ON). Observe the user LED (CYBSP_USER_LED) turning ON/OFF on the board.
+      ![Figure 5](images/tcp-server-ipv6-output.png)
 
-   **Figure 2. LED Status on TCP Server**
+      **Figure 6. LED Status on TCP Client (IPv6 Addressing Mode)**
 
-   ![Figure 2](images/tcp-server-output.png)
+      ![Figure 6](images/tcp-client-ipv6-output.png)
 
+      **Note:** Instead of using the Python TCP server (*tcp_secure_server.py*), alternatively you can use the example [mtb-example-anycloud-secure-tcp-server](https://github.com/cypresssemiconductorco/mtb-example-anycloud-secure-tcp-server) to run as TCP server on a second kit. See the code example documentation to learn how to use the example. If you are using the example as the server, the IP address (`TCP_SERVER_IP_ADDRESS`) configured in **Step 6** in the **Operation** section should be that of the IP address assigned to the kit in the example.
+    
 ## Debugging
 
 You can debug the example to step through the code. In the IDE, use the **\<Application Name> Debug (KitProg3)** configuration in the **Quick Panel**. For more details, see the "Program and Debug" section in the Eclipse IDE for ModusToolbox User Guide: *{ModusToolbox install directory}/ide_{version}/docs/mt_ide_user_guide.pdf*.
@@ -167,12 +204,12 @@ Table 1 lists the ModusToolbox resources used in this example, and how they are 
 | LED (BSP) | CYBSP_USER_LED | User LED to show output |
 
 
-This example uses the Arm Cortex®-M4 (CM4) CPU of PSoC 6 MCU to execute an RTOS task: TCP Client task. At device reset, the default Cortex-M0+ (CM0+) application enables the CM4 CPU and configures the CM0+ CPU to go to sleep.
+This example uses the Arm Cortex®-M4 (CM4) CPU of PSoC 6 MCU to execute an RTOS task; TCP Client task. At device reset, the default Cortex-M0+ (CM0+) application enables the CM4 CPU and configures the CM0+ CPU to go to sleep.
 
-In this example, TCP client establishes a secure connection with a TCP server through SSL handshake. During the SSL handshake, client presents its SSL certifcate for verification and also verifies the server's identity to which it is connecting to. The client's SSL certificate used in this example is a self signed SSL certificate. See [Creating a Self-Signed Certificate](#creating-a-self-signed-ssl-certificate) for more details. Once the SSL handshake completes successfully, the TCP client controls the user LED ON or OFF based on the command received from the TCP server.
+In this example, TCP Client establishes a secure connection with a TCP Server through SSL handshake. During the SSL handshake, the client presents its SSL certifcate for verification and also verifies the server's identity to which it is connecting. The client's SSL certificate used in this example is a self-signed SSL certificate. See [Creating a Self-Signed Certificate](#creating-a-self-signed-ssl-certificate) for more details. Once the SSL handshake completes successfully, the TCP Client controls the user LED ON or OFF based on the command received from the TCP server.
 
 ### Creating a Self-Signed SSL Certificate
-The TCP client demonstrated in this example uses a self-signed SSL certificate. This means that there is no third-party certificate issuing authority, commonly referred to as CA, involved in the authentication of the client. Servers connecting to the this client must have an exact copy of the SSL certificate to verify the client's identity.
+The TCP Client demonstrated in this example uses a self-signed SSL certificate. This means that there is no third-party certificate issuing authority, commonly referred to as CA, involved in the authentication of the client. Servers connecting to the this client must have an exact copy of the SSL certificate to verify the client's identity.
 
 Do the following to generate a self-signed SSL certificate:
 
@@ -185,10 +222,10 @@ which openssl
 Install OpenSSL if the `which` command does not return a path. 
 
 | Operating System  |  Installation    |
-| :------- | :------------    | 
+| :------- | :------------    |
 | Windows | [Windows OpenSSL installer](http://gnuwin32.sourceforge.net/packages/openssl.htm) |
-| Ubuntu Linux |`apt-get install openssl`| 
-| macOS |[Homebrew](https://brew.sh/):`brew install openssl`| 
+| Ubuntu Linux |`apt-get install openssl`|
+| macOS |[Homebrew](https://brew.sh/):`brew install openssl`|
 
 #### Generate SSL Ceritificate and Private Key 
 Run the following commands to generate the SSL certificate and private key. 
@@ -238,18 +275,19 @@ For PSoC 6 MCU devices, see [How to Design with PSoC 6 MCU - KBA223067](https://
 
 ## Document History
 
-Document Title: CE229252 - AnyCloud Example: Secure TCP Client
+Document Title: *CE229252 - AnyCloud Example: Secure TCP Client*
 
 | Version | Description of Change |
 | ------- | --------------------- |
 | 1.0.0   | New code example      |
 | 1.1.0   | Updated for ModusToobox 2.1. <br>Code updated to use Cypress Secure Sockets and Wi-Fi Connection Manager libraries. |
 | 1.2.0   | Makefile updated to sync with BSP changes. <br>Code updated to use binary semaphore. |
+| 1.3.0   | Updated to add link-local IPv6 support. |
 ------
 
 All other trademarks or registered trademarks referenced herein are the property of their respective owners.
 
-![banner](images/footer_banner.png)
+![banner](images/ifx-cy-banner.png)
 
 -------------------------------------------------------------------------------
 

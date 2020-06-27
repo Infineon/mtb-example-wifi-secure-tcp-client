@@ -7,9 +7,8 @@
 # which files to ignore in whatever form your VCS requires. If you do not check your
 # code into a VCS, you can ignore the .gitignore file.
 
-# ModusToolbox Libraries
+# ModusToolbox libraries are cloned into this directory, by default
 libs/*
-!libs/*.lib
 
 # Eclipse IDE for ModusToolbox files
 .metadata/
@@ -19,7 +18,10 @@ libs/*
 # .project
 # .mtbLaunchConfigs/
 
-# Eclipse IDE for ModusToolbox build output
+# ModusToolbox Configurator generated code
+GeneratedSource/
+
+# ModusToolbox build system output
 build/
 Debug/
 Release/
