@@ -5,22 +5,23 @@
 * client operation.
 *
 *******************************************************************************
-* (c) 2019-2020, Cypress Semiconductor Corporation. All rights reserved.
-*******************************************************************************
-* This software, including source code, documentation and related materials
-* ("Software"), is owned by Cypress Semiconductor Corporation or one of its
-* subsidiaries ("Cypress") and is protected by and subject to worldwide patent
-* protection (United States and foreign), United States copyright laws and
-* international treaty provisions. Therefore, you may use this Software only
-* as provided in the license agreement accompanying the software package from
-* which you obtained this Software ("EULA").
+* Copyright 2019-2021, Cypress Semiconductor Corporation (an Infineon company) or
+* an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
+* This software, including source code, documentation and related
+* materials ("Software") is owned by Cypress Semiconductor Corporation
+* or one of its affiliates ("Cypress") and is protected by and subject to
+* worldwide patent protection (United States and foreign),
+* United States copyright laws and international treaty provisions.
+* Therefore, you may use this Software only as provided in the license
+* agreement accompanying the software package from which you
+* obtained this Software ("EULA").
 * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
-* non-transferable license to copy, modify, and compile the Software source
-* code solely for use in connection with Cypress's integrated circuit products.
-* Any reproduction, modification, translation, compilation, or representation
-* of this Software except as specified above is prohibited without the express
-* written permission of Cypress.
+* non-transferable license to copy, modify, and compile the Software
+* source code solely for use in connection with Cypress's
+* integrated circuit products.  Any reproduction, modification, translation,
+* compilation, or representation of this Software except as specified
+* above is prohibited without the express written permission of Cypress.
 *
 * Disclaimer: THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND,
 * EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT, IMPLIED
@@ -31,9 +32,9 @@
 * not authorize its products for use in any products where a malfunction or
 * failure of the Cypress product may reasonably be expected to result in
 * significant property damage, injury or death ("High Risk Product"). By
-* including Cypress's product in a High Risk Product, the manufacturer of such
-* system or application assumes all risk of such use and in doing so agrees to
-* indemnify Cypress against all liability.
+* including Cypress's product in a High Risk Product, the manufacturer
+* of such system or application assumes all risk of such use and in doing
+* so agrees to indemnify Cypress against all liability.
 *******************************************************************************/
 
 /* Header file includes. */
@@ -66,6 +67,9 @@
 /* Wi-Fi credentials and TCP port settings header file. */
 #include "network_credentials.h"
 
+/* to use the portable formatting macros */
+#include <inttypes.h>
+
 /******************************************************************************
 * Macros
 ******************************************************************************/
@@ -78,11 +82,17 @@
 /******************************************************************************
 * Function Prototypes
 ******************************************************************************/
-cy_rslt_t connect_to_wifi_ap(void);
 cy_rslt_t connect_to_secure_tcp_server(cy_socket_sockaddr_t address);
 cy_rslt_t create_secure_tcp_client_socket();
 cy_rslt_t tcp_client_recv_handler(cy_socket_t socket_handle, void *arg);
 cy_rslt_t tcp_disconnection_handler(cy_socket_t socket_handle, void *arg);
+void read_uart_input(uint8_t* input_buffer_ptr);
+
+#if(USE_AP_INTERFACE)
+    static cy_rslt_t softap_start(void);
+#else
+    static cy_rslt_t connect_to_wifi_ap(void);
+#endif /* USE_AP_INTERFACE */
 
 /******************************************************************************
 * Global Variables
@@ -95,7 +105,7 @@ static const char client_private_key[] = keyCLIENT_PRIVATE_KEY_PEM;
 /* Root CA certificate for TCP server identity verification. */
 static const char tcp_server_ca_cert[] = keySERVER_ROOTCA_PEM;
 
-/* Variable to store the TLS identity (certificate and private key).*/
+/* Variable to store the TLS identity (certificate and private key). */
 void *tls_identity;
 
 /* TCP client socket handle */
@@ -103,6 +113,9 @@ cy_socket_t client_handle;
 
 /* Binary semaphore handle to keep track of secure TCP server connection. */
 SemaphoreHandle_t connect_to_server;
+
+/* Holds the IP address obtained for SoftAP using Wi-Fi Connection Manager (WCM). */
+cy_wcm_ip_address_t softap_ip_address;
 
 /*******************************************************************************
  * Function Name: tcp_secure_client_task
@@ -121,6 +134,10 @@ SemaphoreHandle_t connect_to_server;
 void tcp_secure_client_task(void *arg)
 {
     cy_rslt_t result;
+    uint8_t uart_input[UART_BUFFER_SIZE];
+
+    /* The configuration in which WCM should be initialized */
+    cy_wcm_config_t wifi_config = { .interface = WIFI_INTERFACE_TYPE };
 
     /* IP address and TCP port number of the TCP server to which the TCP client
      * connects to. */
@@ -134,19 +151,39 @@ void tcp_secure_client_task(void *arg)
         #endif
             .port = TCP_SERVER_PORT
     };
-    
+
+    /* Initialize Wi-Fi connection manager. */
+    result = cy_wcm_init(&wifi_config);
+    if (result != CY_RSLT_SUCCESS)
+    {
+        printf("Wi-Fi Connection Manager initialization failed! Error code: 0x%08"PRIx32"\n", (uint32_t)result);
+        CY_ASSERT(0);
+    }
+    printf("Wi-Fi Connection Manager initialized.\r\n");
+
+    #if(USE_AP_INTERFACE)
+
+        /* Start the Wi-Fi device as a Soft AP interface. */
+        result = softap_start();
+        if (result != CY_RSLT_SUCCESS)
+        {
+            printf("Failed to Start Soft AP! Error code: 0x%08"PRIx32"\n", (uint32_t)result);
+            CY_ASSERT(0);
+        }
+    #else
+        /* Connect to Wi-Fi AP */
+        if(connect_to_wifi_ap() != CY_RSLT_SUCCESS )
+        {
+            printf("\n Failed to connect to Wi-Fi AP.\n");
+            CY_ASSERT(0);
+        }
+    #endif /* USE_AP_INTERFACE */
+
     /* Create a binary semaphore to keep track of secure TCP server connection. */
     connect_to_server = xSemaphoreCreateBinary();
 
-    /* Give the semaphore so as to connect to TCP server.  */
-    xSemaphoreGive(connect_to_server);   
-
-    /* Connect to Wi-Fi AP */
-    if(connect_to_wifi_ap() != CY_RSLT_SUCCESS )
-    {
-        printf("\n Failed to connect to Wi-Fi AP.\n");
-        CY_ASSERT(0);
-    }
+    /* Give the semaphore so as to connect to TCP server. */
+    xSemaphoreGive(connect_to_server); 
 
     /* TCP client certificate length and private key length. */
     const size_t tcp_client_cert_len = strlen( tcp_client_cert );
@@ -168,7 +205,7 @@ void tcp_secure_client_task(void *arg)
     result = cy_tls_load_global_root_ca_certificates(tcp_server_ca_cert, strlen(tcp_server_ca_cert));
     if( result != CY_RSLT_SUCCESS)
     {
-        printf("cy_tls_load_global_root_ca_certificates failed! Error code: %lu\n", result);
+        printf("cy_tls_load_global_root_ca_certificates failed! Error code: %"PRIu32"\n", result);
     }
     else
     {
@@ -180,7 +217,7 @@ void tcp_secure_client_task(void *arg)
                                     client_private_key, pkey_len, &tls_identity);
     if(result != CY_RSLT_SUCCESS)
     {
-        printf("Failed cy_tls_create_identity! Error code: %lu\n", result);
+        printf("Failed cy_tls_create_identity! Error code: %"PRIu32"\n", result);
         CY_ASSERT(0);
     }   
 
@@ -189,6 +226,49 @@ void tcp_secure_client_task(void *arg)
         /* Wait till semaphore is acquired so as to connect to a secure TCP server. */
         xSemaphoreTake(connect_to_server, portMAX_DELAY);
 
+        printf("Connect to TCP server\n");
+
+        #if(USE_IPV6_ADDRESS)
+            printf("Enter the IPv6 address of the TCP Server:\n");
+        #else
+            printf("Enter the IPv4 address of the TCP Server:\n");
+        #endif
+            
+
+        /* Prevent system from entering deep sleep mode
+         * when receiving data from UART.
+         */
+        cyhal_syspm_lock_deepsleep();
+
+        /* Clear the UART input buffer. */
+        memset(uart_input, 0, UART_BUFFER_SIZE);
+
+        /* Read the TCP server's IPv4 address from  the user via the
+         * UART terminal.
+         */
+        read_uart_input(uart_input);
+
+        /* Allow system to enter deep sleep mode. */
+        cyhal_syspm_unlock_deepsleep();
+        
+        #if(USE_IPV6_ADDRESS)
+            ip6addr_aton((char *)uart_input,
+                         (ip6_addr_t *)&tcp_server_address.ip_address.ip.v6);
+        #else
+            ip4addr_aton((char *)uart_input,
+                         (ip4_addr_t *)&tcp_server_address.ip_address.ip.v4);
+        #endif
+
+        #if(USE_IPV6_ADDRESS)
+            printf("Connecting to TCP Server (IPv6 Address: %s, Port: %d)\n\n",
+                    ip6addr_ntoa((const ip6_addr_t *)&tcp_server_address.ip_address.ip.v6),
+                    TCP_SERVER_PORT);
+        #else
+            printf("Connecting to TCP Server (IPv4 Address: %s, Port: %d)\n\n",
+                    ip4addr_ntoa((const ip4_addr_t *)&tcp_server_address.ip_address.ip.v4),
+                    TCP_SERVER_PORT);
+        #endif
+
         /* Connect to the secure TCP server. If the connection fails, retry
          * to connect to the server for MAX_TCP_SERVER_CONN_RETRIES times. */
         printf("Connecting to TCP server...\n");
@@ -196,12 +276,78 @@ void tcp_secure_client_task(void *arg)
 
         if(result != CY_RSLT_SUCCESS)
         {
-            printf("Failed to connect to TCP server. Error code: %lu\n", result);
-            CY_ASSERT(0);
+            printf("Failed to connect to TCP server. Error code: %"PRIu32"\n", result);
+            /* Give the semaphore so as to connect to TCP server. */
+            xSemaphoreGive(connect_to_server);
+
         }
     }
  }
 
+#if(USE_AP_INTERFACE)
+/********************************************************************************
+ * Function Name: softap_start
+ ********************************************************************************
+ * Summary:
+ *  This function configures device in AP mode and initializes
+ *  a SoftAP with the given credentials (SOFTAP_SSID, SOFTAP_PASSWORD and
+ *  SOFTAP_SECURITY_TYPE).
+ *
+ * Parameters:
+ *  void
+ *
+ * Return:
+ *  cy_rslt_t: Returns CY_RSLT_SUCCESS if the Soft AP is started successfully,
+ *  a WCM error code otherwise.
+ *
+ *******************************************************************************/
+static cy_rslt_t softap_start(void)
+{
+    cy_rslt_t result = CY_RSLT_SUCCESS;
+    #if(USE_IPV6_ADDRESS)
+        cy_wcm_ip_address_t ip_address;
+    #endif 
+
+    /* Initialize the Wi-Fi device as a Soft AP. */
+    cy_wcm_ap_credentials_t softap_credentials = {SOFTAP_SSID, SOFTAP_PASSWORD,
+                                                  SOFTAP_SECURITY_TYPE};
+    static const cy_wcm_ip_setting_t softap_ip_info = {
+        INITIALISER_IPV4_ADDRESS(.ip_address, SOFTAP_IP_ADDRESS),
+        INITIALISER_IPV4_ADDRESS(.gateway,    SOFTAP_GATEWAY),
+        INITIALISER_IPV4_ADDRESS(.netmask,    SOFTAP_NETMASK)
+        };
+
+    cy_wcm_ap_config_t softap_config = {softap_credentials, SOFTAP_RADIO_CHANNEL,
+                                        softap_ip_info,
+                                        NULL};
+
+    /* Start the the Wi-Fi device as a Soft AP. */
+    result = cy_wcm_start_ap(&softap_config);
+
+    if(result == CY_RSLT_SUCCESS)
+    {
+        printf("Wi-Fi Device configured as Soft AP\n");
+        printf("Connect TCP client device to the network: SSID: %s Password:%s\n",
+                SOFTAP_SSID, SOFTAP_PASSWORD);
+    #if(USE_IPV6_ADDRESS)
+        /* Get the IPv6 address.*/
+        result = cy_wcm_get_ipv6_addr(CY_WCM_INTERFACE_TYPE_AP, CY_WCM_IPV6_LINK_LOCAL, &ip_address,1);
+        if(result == CY_RSLT_SUCCESS)
+        {
+            printf("SofAP IPv6 Address : %s\n\n",
+                   ip6addr_ntoa((const ip6_addr_t*)&ip_address.ip.v6));
+        }
+    #else
+        printf("SofAP IPv4 Address : %s\n\n",
+                ip4addr_ntoa((const ip4_addr_t *)&softap_ip_info.ip_address.ip.v4));
+    #endif  
+    }
+
+    return result;
+}
+#endif /* USE_AP_INTERFACE */
+
+#if(!USE_AP_INTERFACE)
 /*******************************************************************************
  * Function Name: connect_to_wifi_ap()
  *******************************************************************************
@@ -217,24 +363,10 @@ cy_rslt_t connect_to_wifi_ap(void)
 {
     cy_rslt_t result;
 
-    /* Variables used by Wi-Fi connection manager.*/
+    /* Variables used by Wi-Fi connection manager. */
     cy_wcm_connect_params_t wifi_conn_param;
 
-    cy_wcm_config_t wifi_config = {
-            .interface = CY_WCM_INTERFACE_TYPE_STA
-    };
-
     cy_wcm_ip_address_t ip_address;
-
-     /* Initialize Wi-Fi connection manager. */
-    result = cy_wcm_init(&wifi_config);
-
-    if (result != CY_RSLT_SUCCESS)
-    {
-        printf("Wi-Fi Connection Manager initialization failed!\n");
-        return result;
-    }
-    printf("Wi-Fi Connection Manager initialized.\r\n");
 
      /* Set the Wi-Fi SSID, password and security type. */
     memset(&wifi_conn_param, 0, sizeof(cy_wcm_connect_params_t));
@@ -255,7 +387,7 @@ cy_rslt_t connect_to_wifi_ap(void)
             #if(USE_IPV6_ADDRESS)
             /* Get the IPv6 address.*/
                 result = cy_wcm_get_ipv6_addr(CY_WCM_INTERFACE_TYPE_STA,
-                                              CY_WCM_IPV6_LINK_LOCAL, &ip_address);
+                                              CY_WCM_IPV6_LINK_LOCAL, &ip_address,1);
                 if(result == CY_RSLT_SUCCESS)
                 {
                     printf("IPv6 address (link-local) assigned: %s\n",
@@ -270,7 +402,7 @@ cy_rslt_t connect_to_wifi_ap(void)
             return result;
         }
 
-        printf("Connection to Wi-Fi network failed with error code %lu."
+        printf("Connection to Wi-Fi network failed with error code %"PRIu32"."
                "Retrying in %d ms...\n", result, WIFI_CONN_RETRY_INTERVAL_MSEC);
 
         vTaskDelay(pdMS_TO_TICKS(WIFI_CONN_RETRY_INTERVAL_MSEC));
@@ -281,6 +413,7 @@ cy_rslt_t connect_to_wifi_ap(void)
 
     return result;
 }
+#endif /* (!USE_AP_INTERFACE)*/
 
 /*******************************************************************************
  * Function Name: create_secure_tcp_client_socket
@@ -302,7 +435,7 @@ cy_rslt_t create_secure_tcp_client_socket()
     cy_socket_opt_callback_t tcp_recv_option;
     cy_socket_opt_callback_t tcp_disconnection_option;
 
-    /* TLS authentication mode.*/
+    /* TLS authentication mode. */
     cy_socket_tls_auth_mode_t tls_auth_mode = CY_SOCKET_TLS_VERIFY_REQUIRED;
 
     /* Create a new secure TCP socket. */
@@ -316,7 +449,7 @@ cy_rslt_t create_secure_tcp_client_socket()
 
     if (result != CY_RSLT_SUCCESS)
     {
-        printf("Failed to create socket! Error Code: %lu\n", result);
+        printf("Failed to create socket! Error Code: %"PRIu32"\n", result);
         return result;
     }
 
@@ -329,7 +462,7 @@ cy_rslt_t create_secure_tcp_client_socket()
     if (result != CY_RSLT_SUCCESS)
     {
         printf("Set socket option: CY_SOCKET_SO_RECEIVE_CALLBACK failed! "
-                "Error Code: %lu\n", result);
+                "Error Code: %"PRIu32"\n", result);
         return result;
     }
 
@@ -343,7 +476,7 @@ cy_rslt_t create_secure_tcp_client_socket()
     if(result != CY_RSLT_SUCCESS)
     {
         printf("Set socket option: CY_SOCKET_SO_DISCONNECT_CALLBACK failed! "
-                "Error Code: %lu\n", result);
+                "Error Code: %"PRIu32"\n", result);
         return result;
     }
 
@@ -353,7 +486,7 @@ cy_rslt_t create_secure_tcp_client_socket()
     if(result != CY_RSLT_SUCCESS)
     {
         printf("Set socket option: CY_SOCKET_SO_TLS_IDENTITY failed! "
-               "Error Code: %lu\n", result);
+               "Error Code: %"PRIu32"\n", result);
     }
 
     /* Set the TLS authentication mode. */
@@ -362,7 +495,7 @@ cy_rslt_t create_secure_tcp_client_socket()
     if(result != CY_RSLT_SUCCESS)
     {
         printf("Set socket option: CY_SOCKET_SO_TLS_AUTH_MODE failed! "
-               "Error Code: %lu\n", result);
+               "Error Code: %"PRIu32"\n", result);
     }
 
     return result;
@@ -392,7 +525,7 @@ cy_rslt_t connect_to_secure_tcp_server(cy_socket_sockaddr_t address)
         conn_result = create_secure_tcp_client_socket();
         if(conn_result != CY_RSLT_SUCCESS)
         {
-            printf("Failed to create secure socket! Error Code: %lu\n", result);
+            printf("Failed to create secure socket! Error Code: %"PRIu32"\n", result);
             CY_ASSERT(0);
         }
         
@@ -509,6 +642,66 @@ cy_rslt_t tcp_disconnection_handler(cy_socket_t socket_handle, void *arg)
     xSemaphoreGive(connect_to_server);
 
     return result;
+}
+
+/*******************************************************************************
+ * Function Name: read_uart_input
+ *******************************************************************************
+ * Summary:
+ *  Function to read user input from UART terminal.
+ *
+ * Parameters:
+ *  uint8_t* input_buffer_ptr: Pointer to input buffer
+ *
+ * Return:
+ *  None
+ *
+ *******************************************************************************/
+void read_uart_input(uint8_t* input_buffer_ptr)
+{
+    cy_rslt_t result = CY_RSLT_SUCCESS;    
+    uint8_t *ptr = input_buffer_ptr; 
+    uint32_t numBytes;
+
+    do
+    {
+        /* Check for data in the UART buffer with zero timeout. */
+        numBytes = cyhal_uart_readable(&cy_retarget_io_uart_obj);
+
+        if(numBytes > 0)
+        {
+            result = cyhal_uart_getc(&cy_retarget_io_uart_obj, ptr,
+                            UART_INPUT_TIMEOUT_MS);
+
+            if(result == CY_RSLT_SUCCESS)
+            {
+                if((*ptr == '\r') || (*ptr == '\n'))
+                {
+                    printf("\n");
+                }
+                else
+                {
+                    /* Echo the received character */
+                    cyhal_uart_putc(&cy_retarget_io_uart_obj, *ptr);
+
+                    if (*ptr != '\b')
+                    {
+                        ptr++;
+                    }
+                    else if(ptr != input_buffer_ptr)
+                    {
+                        ptr--;
+                    }
+                }
+            }
+        }
+
+        vTaskDelay(RTOS_TICK_TO_WAIT);
+
+    } while((*ptr != '\r') && (*ptr != '\n'));
+
+    /* Terminate string with NULL character. */
+    *ptr = '\0';
 }
 
 /* [] END OF FILE */
