@@ -87,6 +87,7 @@ cy_rslt_t create_secure_tcp_client_socket();
 cy_rslt_t tcp_client_recv_handler(cy_socket_t socket_handle, void *arg);
 cy_rslt_t tcp_disconnection_handler(cy_socket_t socket_handle, void *arg);
 void read_uart_input(uint8_t* input_buffer_ptr);
+void print_heap_usage(char *msg);
 
 #if(USE_AP_INTERFACE)
     static cy_rslt_t softap_start(void);
@@ -281,6 +282,8 @@ void tcp_secure_client_task(void *arg)
             xSemaphoreGive(connect_to_server);
 
         }
+        
+        print_heap_usage("After connecting to TCP server");
     }
  }
 
@@ -482,7 +485,7 @@ cy_rslt_t create_secure_tcp_client_socket()
 
     /* Set the TCP socket to use the TLS identity. */
     result = cy_socket_setsockopt(client_handle, CY_SOCKET_SOL_TLS, CY_SOCKET_SO_TLS_IDENTITY,
-                                  tls_identity, sizeof(tls_identity));
+                                  tls_identity, sizeof(void *));
     if(result != CY_RSLT_SUCCESS)
     {
         printf("Set socket option: CY_SOCKET_SO_TLS_IDENTITY failed! "
@@ -608,6 +611,8 @@ cy_rslt_t tcp_client_recv_handler(cy_socket_t socket_handle, void *arg)
     {
         printf("Acknowledgement sent to TCP server\n");
     }
+    
+    print_heap_usage("After controlling the LED and ACKing server");
 
     return result;
 }

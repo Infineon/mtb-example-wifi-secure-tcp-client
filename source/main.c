@@ -61,8 +61,7 @@
 /******************************************************************************
 * Global Variables
 ******************************************************************************/
-/* This enables RTOS aware debugging */
-volatile int uxTopUsedPriority ;
+
 
 /******************************************************************************
  * Function Name: main
@@ -80,13 +79,10 @@ volatile int uxTopUsedPriority ;
  ******************************************************************************/
 int main()
 {
-    cy_rslt_t result ;
-
-    /* This enables RTOS aware debugging in OpenOCD */
-    uxTopUsedPriority = configMAX_PRIORITIES - 1;
+    cy_rslt_t result;
 
     /* Initialize the board support package */
-    result = cybsp_init() ;
+    result = cybsp_init();
     CY_ASSERT(result == CY_RSLT_SUCCESS);
     
     /* To avoid compiler warnings. */
@@ -106,18 +102,18 @@ int main()
     /* \x1b[2J\x1b[;H - ANSI ESC sequence to clear screen */
     printf("\x1b[2J\x1b[;H");
     printf("===============================================================\n");
-    printf("CE229252 - AnyCloud Example: Secure TCP Client\n");
+    printf("CE229252 - Secure TCP Client\n");
     printf("===============================================================\n\n");
 
     /* Create the tasks */
     xTaskCreate(tcp_secure_client_task, "Network task", TCP_SECURE_CLIENT_TASK_STACK_SIZE,
-                NULL, TCP_SECURE_CLIENT_TASK_PRIORITY, NULL) ;
+                NULL, TCP_SECURE_CLIENT_TASK_PRIORITY, NULL);
 
     /* Start the FreeRTOS scheduler */
-    vTaskStartScheduler() ;
+    vTaskStartScheduler();
 
     /* Should never get here */
-    CY_ASSERT(0) ;
+    CY_ASSERT(0);
 }
 
 /* [] END OF FILE */
