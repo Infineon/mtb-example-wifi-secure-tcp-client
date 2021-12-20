@@ -144,6 +144,10 @@ PREBUILD=
 # Custom post-build commands to run.
 POSTBUILD=
 
+ifeq ($(TARGET), CY8CPROTO-062S3-4343W)
+DEFINES+=CY_ENABLE_XIP_PROGRAM
+DEFINES+=CY_STORAGE_WIFI_DATA=\".cy_xip\"
+endif
 
 ################################################################################
 # Paths

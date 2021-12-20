@@ -2,25 +2,25 @@
 
 This code example demonstrates the implementation of a secure TCP client with PSoC&trade; 6 MCU with AIROC™ CYW43xxx Wi-Fi & Bluetooth® combo chips.
 
-In this example, a TCP client establishes a secure connection with a TCP server through a SSL handshake. Once the SSL handshake completes successfully, the TCP client turns ON or OFF the user LED based on the command received from the TCP server. The Wi-Fi device can be brought up in either STA or Soft AP interface mode. Additionally, this code example can be configured to work with IPv4 or link-local IPv6 addressing mode.
+In this example, a TCP client establishes a secure connection with a TCP server through an SSL handshake. Once the SSL handshake completes successfully, the TCP client turns ON or OFF the user LED based on the command received from the TCP server. The Wi-Fi device can be brought up in either STA or Soft AP interface mode. Additionally, this code example can be configured to work with IPv4 or link-local IPv6 addressing mode.
  
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-anycloud-secure-tcp-client)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMjkyNTIiLCJTcGVjIE51bWJlciI6IjAwMi0yOTI1MiIsIkRvYyBUaXRsZSI6IlNlY3VyZSBUQ1AgY2xpZW50IiwicmlkIjoic2RhayIsIkRvYyB2ZXJzaW9uIjoiMi4xLjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IlBTT0MifQ==)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMjkyNTIiLCJTcGVjIE51bWJlciI6IjAwMi0yOTI1MiIsIkRvYyBUaXRsZSI6IlNlY3VyZSBUQ1AgY2xpZW50IiwicmlkIjoic2RhayIsIkRvYyB2ZXJzaW9uIjoiMy4wLjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IlBTT0MifQ==)
 
 
 ## Requirements
 
-- [ModusToolbox&trade; software](https://www.cypress.com/products/modustoolbox-software-environment) v2.2 or later (tested with v2.3)
-- Board support package (BSP) minimum required version: 2.0.0
+- [ModusToolbox&trade; software](https://www.cypress.com/products/modustoolbox-software-environment) v2.4 or later
+- Board support package (BSP) minimum required version: 3.0.0
 - Programming language: C
-- Associated parts: All [PSoC&trade; 6 MCU](https://www.cypress.com/PSoC6) parts, [AIROC™ CYW20735 Bluetooth® & Bluetooth® LE system on chip](https://www.cypress.com/products/cyw20735), [AIROC™ CYW20819 Bluetooth® & Bluetooth® LE system on chip](https://www.cypress.com/products/cyw20819), [AIROC™ CYW43012 Wi-Fi & Bluetooth® combo chip](https://www.cypress.com/products/cyw43012), [AIROC™ CYW4332W Wi-Fi & Bluetooth® combo chip](https://www.cypress.com/products/cyw4343w)
+- Associated parts: All [PSoC&trade; 6 MCU](https://www.cypress.com/PSoC6) parts
 
 
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
-- GNU Arm® embedded compiler v9.3.1 (`GCC_ARM`) - Default value of `TOOLCHAIN`
+- GNU Arm® embedded compiler v10.3.1 (`GCC_ARM`) - Default value of `TOOLCHAIN`
 - Arm&reg; compiler v6.13 (`ARM`)
 - IAR C/C++ compiler v8.42.2 (`IAR`)
 
@@ -31,13 +31,15 @@ In this example, a TCP client establishes a secure connection with a TCP server 
 - [PSoC&trade; 62S2 Wi-Fi Bluetooth&reg; pioneer kit](https://www.cypress.com/CY8CKIT-062S2-43012) (`CY8CKIT-062S2-43012`)
 - [PSoC&trade; 62S1 Wi-Fi Bluetooth&reg; pioneer kit](https://www.cypress.com/CYW9P62S1-43438EVB-01) (`CYW9P62S1-43438EVB-01`)
 - [PSoC&trade; 62S1 Wi-Fi Bluetooth&reg; pioneer kit](https://www.cypress.com/CYW9P62S1-43012EVB-01) (`CYW9P62S1-43012EVB-01`)
-- [PSoC&trade; 62S2 evaluation kit](https://www.cypress.com/CY8CEVAL-062S2) (`CY8CEVAL-062S2-LAI-4373M2`)
+- [PSoC&trade; 62S3 Wi-Fi Bluetooth&reg; prototyping kit](https://www.cypress.com/CY8CPROTO-062S3-4343W) (`CY8CPROTO-062S3-4343W`)
+- [PSoC&trade; 62S2 evaluation kit](https://www.cypress.com/CY8CEVAL-062S2) (`CY8CEVAL-062S2-LAI-4373M2`, `CY8CEVAL-062S2-MUR-43439M2`)
 
 ## Hardware setup
 
 This example uses the board's default configuration. See the kit user guide to ensure that the board is configured correctly.
 
 **Note:** The PSoC&trade; 6 Bluetooth&reg; LE pioneer kit (CY8CKIT-062-BLE) and the PSoC&trade; 6 Wi-Fi Bluetooth&reg; pioneer kit (CY8CKIT-062-WIFI-BT) ship with KitProg2 installed. The ModusToolbox&trade; software requires KitProg3. Before using this code example, make sure that the board is upgraded to KitProg3. The tool and instructions are available in the [Firmware Loader](https://github.com/Infineon/Firmware-loader) GitHub repository. If you do not upgrade, you will see an error like "unable to find CMSIS-DAP device" or "KitProg firmware is out of date".
+
 
 ## Software setup
 
@@ -140,7 +142,7 @@ For a list of supported IDEs and more details, see the "Exporting to IDEs" secti
 
    1. Set the `USE_AP_INTERFACE` macro to '0'. This is the default mode.
 
-   2. Modify the `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY_TYPE` macros to match with that of the Wi-Fi network credentials that you want to connect. These macros are defined in the *network_credentials.h* file. Ensure that the Wi-Fi network that you are connecting to is configured as a private network for the proper functioning of this example.
+   2. Modify the `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY_TYPE` macros to match that of the Wi-Fi network credentials that you want to connect to. These macros are defined in the *network_credentials.h* file. Ensure that the Wi-Fi network that you are connecting to is configured as a private network for the proper functioning of this example.
 
    **Kit in AP mode:**
 
@@ -215,7 +217,7 @@ For a list of supported IDEs and more details, see the "Exporting to IDEs" secti
 
    macOS: `ifconfig |grep inet`
 
-8. Ensure a Python interpreter (see [Software setup](#software-setup)) is installed on your computer.
+8. Ensure that a Python interpreter (see [Software setup](#software-setup)) is installed on your computer.
 
 9. Open a command shell from the project directory and run the Python TCP secure server (*{project directory}\python-secure-tcp-server*).
 
@@ -237,7 +239,7 @@ For a list of supported IDEs and more details, see the "Exporting to IDEs" secti
 
 11. In the terminal program, enter the IP address determined in Step 7.
 
-12. From the Python secure TCP server, send the command to turn the LED ON or OFF to the TCP client ( '0' to turn the LED OFF and '1' to turn the LED ON). Observe the user LED (CYBSP_USER_LED) turning ON/OFF on the board.
+12. From the Python secure TCP server, send the command to turn the LED ON or OFF to the TCP client ('0' to turn the LED OFF and '1' to turn the LED ON). Observe the user LED (CYBSP_USER_LED) turning ON/OFF on the board.
 
       **Figure 4. LED status on TCP server (IPv4 addressing mode)**
 
@@ -268,7 +270,7 @@ For a list of supported IDEs and more details, see the "Exporting to IDEs" secti
       ![](images/tcp-client-ipv6-output-sta-mode.png)
 
 
-      When the CE is configured in AP and IPv6 mode, the only change from Figure 4 will be the IPv6 address being displayed instead of IPv4.
+      When the CE is configured in AP and IPv6 mode, the only change from Figure 4 is the IPv6 address being displayed instead of IPv4.
 
       **Note:** Instead of using the Python TCP server (*tcp_secure_server.py*), you can use the [mtb-example-secure-tcp-server](https://github.com/Infineon/mtb-example-anycloud-secure-tcp-server) example to run as the TCP server on the second kit. See the code example documentation to learn how to use the example.
 
@@ -309,7 +311,7 @@ Do the following to generate a self-signed SSL certificate:
 
 #### Generate SSL certificate and private key
 
-1. Run the below commands with a CLI (on Windows, use the command line "modus-shell" program provided in the ModusToolbox&trade; installation instead of a standard Windows command-line application) to generate the SSL certificate and private key.
+1. Run the following commands with a CLI (on Windows, use the command line "modus-shell" program provided in the ModusToolbox&trade; installation instead of a standard Windows command-line application) to generate the SSL certificate and private key.
 
    ```
    openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout client.key -out client.crt
@@ -330,7 +332,7 @@ Device documentation | [PSoC&trade; 6 MCU datasheets](https://www.cypress.com/se
 Development kits | Visit www.cypress.com/microcontrollers-mcus-kits and use the options in the **Select your kit** section to filter kits by *Product family* or *Features*.
 Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/infineon/mtb-pdl-cat1) – PSoC&trade; 6 peripheral driver library (PDL)  <br> [mtb-hal-cat1](https://github.com/infineon/mtb-hal-cat1) – Hardware abstraction layer (HAL) library <br> [retarget-io](https://github.com/infineon/retarget-io) – Utility library to retarget STDIO messages to a UART port
 Middleware on GitHub  | [capsense](https://github.com/infineon/capsense) – CAPSENSE&trade; library and documents <br> [psoc6-middleware](https://github.com/Infineon/modustoolbox-software#psoc-6-middleware-libraries) – Links to all PSoC&trade; 6 MCU middleware
-Tools  | [Eclipse IDE for ModusToolbox&trade; software](https://www.cypress.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon&reg; MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth® connectivity devices.
+Tools  | [Eclipse IDE for ModusToolbox&trade; software](https://www.cypress.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth® connectivity devices.
 
 <br>
 
@@ -353,6 +355,7 @@ Document title: *CE229252* - *Secure TCP client*
  1.3.0   | Updated to add link-local IPv6 support.
  2.0.0   | Major update to support ModusToolbox&trade; software v2.2, added support for new kits.<br />Added soft AP Wi-Fi interface mode<br /> This version is not backward compatible with ModusToolbox&trade; software v2.1.<br /> Updated to support FreeRTOS v10.3.1
  2.1.0   | Updated to FreeRTOS v10.4.3 <br> Added support for new kits
+ 3.0.0   | Updated to support ModusToolbox™ software v2.4 <br> Added support for new kits <br> Updated the BSPs to v3.X
 
 <br>
 ---------------------------------------------------------
