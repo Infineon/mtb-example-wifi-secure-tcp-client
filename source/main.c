@@ -7,7 +7,7 @@
 * Related Document: See Readme.md
 *
 *******************************************************************************
-* Copyright 2019-2021, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2019-2022, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -54,7 +54,7 @@
 /* Include serial flash library and QSPI memory configurations only for the
  * kits that require the Wi-Fi firmware to be loaded in external QSPI NOR flash.
  */
-#if defined(TARGET_CY8CPROTO_062S3_4343W)
+#if defined(CY_DEVICE_PSOC6A512K)
 #include "cy_serial_flash_qspi.h"
 #include "cycfg_qspi_memslot.h"
 #endif
@@ -107,7 +107,7 @@ int main()
     cyhal_gpio_init(CYBSP_USER_LED, CYHAL_GPIO_DIR_OUTPUT,
                         CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
 
-    #if defined(TARGET_CY8CPROTO_062S3_4343W)
+    #if defined(CY_DEVICE_PSOC6A512K)
     const uint32_t bus_frequency = 50000000lu;
 
     cy_serial_flash_qspi_init(smifMemConfigs[0], CYBSP_QSPI_D0, CYBSP_QSPI_D1,
