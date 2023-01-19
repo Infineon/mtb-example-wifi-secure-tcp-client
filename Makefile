@@ -46,7 +46,7 @@ TARGET=CY8CPROTO-062-4343W
 #
 # If APPNAME is edited, ensure to update or regenerate launch
 # configurations for your IDE.
-APPNAME=mtb-example-secure-tcp-client
+APPNAME=mtb-example-wifi-secure-tcp-client
 
 # Name of toolchain to use. Options include:
 #
@@ -147,6 +147,9 @@ PREBUILD=
 
 # Custom post-build commands to run.
 POSTBUILD=
+
+# To change the default policy
+CY_SECURE_POLICY_NAME=policy_single_CM0_CM4_smif_swap
 
 
 ################################################################################
