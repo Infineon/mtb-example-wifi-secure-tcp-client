@@ -36,7 +36,6 @@
 * of such system or application assumes all risk of such use and in doing
 * so agrees to indemnify Cypress against all liability.
 *******************************************************************************/
-
 /* Header file includes. */
 #include "cyhal.h"
 #include "cybsp.h"
@@ -79,6 +78,7 @@
 #define ACK_LED_OFF                        "LED OFF ACK"
 #define MSG_INVALID_CMD                    "Invalid command"
 
+
 /******************************************************************************
 * Function Prototypes
 ******************************************************************************/
@@ -95,10 +95,10 @@ void print_heap_usage(char *msg);
     static cy_rslt_t connect_to_wifi_ap(void);
 #endif /* USE_AP_INTERFACE */
 
+
 /******************************************************************************
 * Global Variables
 ******************************************************************************/
-
 /* TLS credentials of the TCP client. */
 static const char tcp_client_cert[] = keyCLIENT_CERTIFICATE_PEM;
 static const char client_private_key[] = keyCLIENT_PRIVATE_KEY_PEM;
@@ -485,7 +485,7 @@ cy_rslt_t create_secure_tcp_client_socket()
 
     /* Set the TCP socket to use the TLS identity. */
     result = cy_socket_setsockopt(client_handle, CY_SOCKET_SOL_TLS, CY_SOCKET_SO_TLS_IDENTITY,
-                                  tls_identity, sizeof(void *));
+                                  tls_identity, sizeof((uint32_t)tls_identity));
     if(result != CY_RSLT_SUCCESS)
     {
         printf("Set socket option: CY_SOCKET_SO_TLS_IDENTITY failed! "
