@@ -133,5 +133,4 @@ int main()
     /* Should never get here */
     CY_ASSERT(0);
 }
-
 /* [] END OF FILE */
