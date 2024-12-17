@@ -112,9 +112,6 @@ DEFINES=$(MBEDTLSFLAGS) CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF CY_
 # disabled by setting CY_WIFI_HOST_WAKE_SW_FORCE to '0'.
 DEFINES+=CY_WIFI_HOST_WAKE_SW_FORCE=0
 
-# Disabled D-cache for XMC7000 based BSPs
-DEFINES+=CY_DISABLE_XMC7000_DATA_CACHE
-
 # Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT=
 

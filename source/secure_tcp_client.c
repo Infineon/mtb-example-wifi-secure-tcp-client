@@ -577,31 +577,33 @@ cy_rslt_t tcp_client_recv_handler(cy_socket_t socket_handle, void *arg)
     /* Variable to store number of bytes received. */
     uint32_t bytes_received = 0;
 
-    char message_buffer[MAX_TCP_DATA_PACKET_LENGTH];
-    cy_rslt_t result ;
+    char message_buffer[MAX_TCP_DATA_PACKET_LENGTH] = {0};
+    cy_rslt_t result = 0;
 
-    printf("============================================================\n");
     result = cy_socket_recv(socket_handle, message_buffer, TCP_LED_CMD_LEN,
                             CY_SOCKET_FLAGS_NONE, &bytes_received);
-
-    if(message_buffer[0] == LED_ON_CMD)
+    if(result == CY_RSLT_SUCCESS)
     {
-        /* Turn the LED ON. */
-        cyhal_gpio_write(CYBSP_USER_LED, CYBSP_LED_STATE_ON);
-        printf("LED turned ON\n");
-        sprintf(message_buffer, ACK_LED_ON);
-    }
-    else if(message_buffer[0] == LED_OFF_CMD)
-    {
-        /* Turn the LED OFF. */
-        cyhal_gpio_write(CYBSP_USER_LED, CYBSP_LED_STATE_OFF);
-        printf("LED turned OFF\n");
-        sprintf(message_buffer, ACK_LED_OFF);
-    }
-    else
-    {
-        printf("Invalid command\n");
-        sprintf(message_buffer, MSG_INVALID_CMD);
+        printf("============================================================\n");
+        if(message_buffer[0] == LED_ON_CMD)
+        {
+            /* Turn the LED ON. */
+            cyhal_gpio_write(CYBSP_USER_LED, CYBSP_LED_STATE_ON);
+            printf("LED turned ON\n");
+            sprintf(message_buffer, ACK_LED_ON);
+        }
+        else if(message_buffer[0] == LED_OFF_CMD)
+        {
+            /* Turn the LED OFF. */
+            cyhal_gpio_write(CYBSP_USER_LED, CYBSP_LED_STATE_OFF);
+            printf("LED turned OFF\n");
+            sprintf(message_buffer, ACK_LED_OFF);
+        }
+        else
+        {
+            printf("Invalid command : %c \n", message_buffer[0]);
+            sprintf(message_buffer, MSG_INVALID_CMD);
+        }
     }
 
     /* Send acknowledgement to the secure TCP server in receipt of the message received. */

@@ -91,6 +91,10 @@ while True:
                          " OFF LED and Press the 'Enter' key: ")
             if(data == ""):
                 print("No option entered!")
+                print("")
+            elif data not in ["0","1"]:
+                print("Invalid command! Please enter '0' or '1'.")
+                print("")
             else:
                 connstream.write(data.encode())
                 data = connstream.read(4096)

@@ -1,60 +1,65 @@
 # Secure TCP client
 
-This code example demonstrates the implementation of a secure TCP client with PSoC&trade; 6 MCU with AIROC&trade; CYW43xxx Wi-Fi & Bluetooth&reg; combo chips.
+This code example demonstrates the implementation of a secure TCP client with PSOC&trade; 6 MCU with AIROC&trade; CYW43xxx Wi-Fi & Bluetooth&reg; combo chips.
 
-In this example, the TCP client establishes a secure connection with a TCP server through SSL handshake. After the successful completion of SSL handshake, the TCP client turns the user LED ON or OFF based on the command received from the TCP server. The Wi-Fi device can be brought up in either STA interface or Soft AP interface mode. Additionally, this code example can be configured to work with IPv4 or link-local IPv6 addressing mode.
+In this example, the TCP client establishes a secure connection with a TCP server through an SSL handshake. After the SSL handshake completes successfully, the TCP client turns the user LED ON or OFF based on the command received from the TCP server. The Wi-Fi device can be brought up in either STA interface or Soft AP interface mode. Additionally, this code example can be configured to work with IPv4 or link-local IPv6 addressing mode.
  
-This example uses the Wi-Fi Core FreeRTOS lwIP mbedtls library of the SDK. This library enables application development based on Wi-Fi, by pulling wifi-connection-manager, FreeRTOS, lwIP, mbed TLS, secure sockets and other dependent modules. The secure sockets library provides an easy-to-use API by abstracting the network stack (lwIP) and the security stack (mbed TLS).
+This example uses the Wi-Fi Core FreeRTOS lwIP mbedtls library of the SDK. This library enables application development based on Wi-Fi, by pulling wifi-connection-manager, FreeRTOS, lwIP, Mbed TLS, Secure sockets, and other dependent modules. The Secure sockets library provides an easy-to-use API by abstracting the network stack (lwIP) and the security stack (Mbed TLS).
 
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-wifi-secure-tcp-client)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMjkyNTIiLCJTcGVjIE51bWJlciI6IjAwMi0yOTI1MiIsIkRvYyBUaXRsZSI6IlNlY3VyZSBUQ1AgY2xpZW50IiwicmlkIjoibmFuanVuZ3Vkc3VyIiwiRG9jIHZlcnNpb24iOiI0LjguMSIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiUFNPQyJ9)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMjkyNTIiLCJTcGVjIE51bWJlciI6IjAwMi0yOTI1MiIsIkRvYyBUaXRsZSI6IlNlY3VyZSBUQ1AgY2xpZW50IiwicmlkIjoic2RhayIsIkRvYyB2ZXJzaW9uIjoiNC45LjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IlBTT0MifQ==)
 
 
 ## Requirements
 
-- [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) v3.2 or later (tested with v3.2)
+- [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) v3.2 or later (tested with v3.3)
 - Board support package (BSP) minimum required version: 4.0.0
 - Programming language: C
-- Associated parts: All [PSoC&trade; 6 MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-psoc-arm-cortex-microcontroller/psoc-6-32-bit-arm-cortex-m4-mcu) parts, [AIROC&trade; CYW20819 Bluetooth&reg; & Bluetooth&reg; LE SoC](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-bluetooth-le-bluetooth-multiprotocol/airoc-bluetooth-le-bluetooth/cyw20819), [AIROC&trade; CYW43012 Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-4-802.11n/cyw43012), [AIROC&trade; CYW4343W Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-4-802.11n/cyw4343w), [AIROC&trade; CYW4373 Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-5-802.11ac/cyw4373), [AIROC&trade; CYW43439 Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-4-802.11n/cyw43439),[AIROC&trade; CYW43022 Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-5-802.11ac/cyw43022)
+- Associated parts: All [PSOC&trade; 6 MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-psoc-arm-cortex-microcontroller/psoc-6-32-bit-arm-cortex-m4-mcu) parts, [AIROC&trade; CYW20819 Bluetooth&reg; & Bluetooth&reg; LE SoC](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-bluetooth-le-bluetooth-multiprotocol/airoc-bluetooth-le-bluetooth/cyw20819), [AIROC&trade; CYW43012 Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-4-802.11n/cyw43012), [AIROC&trade; CYW4343W Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-4-802.11n/cyw4343w), [AIROC&trade; CYW4373 Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-5-802.11ac/cyw4373), [AIROC&trade; CYW43439 Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-4-802.11n/cyw43439), [AIROC&trade; CYW43022 Wi-Fi & Bluetooth&reg; combo chip](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos/wi-fi-5-802.11ac/cyw43022)
+
 
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
 - GNU Arm&reg; Embedded Compiler v11.3.1 (`GCC_ARM`) – Default value of `TOOLCHAIN`
-- Arm&reg; Compiler v6.16 (`ARM`)
-- IAR C/C++ Compiler v9.30.1 (`IAR`)
+- Arm&reg; Compiler v6.22 (`ARM`)
+- IAR C/C++ Compiler v9.50.2 (`IAR`)
+
 
 ## Supported kits (make variable 'TARGET')
 
-- [PSoC&trade; 62S2 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062S2-43439) (`CY8CPROTO-062S2-43439`) – Default value of `TARGET`
-- [PSoC&trade; 6 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062-4343W) (`CY8CPROTO-062-4343W`)
-- [PSoC&trade; 6 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CY8CKIT-062-WIFI-BT) (`CY8CKIT-062-WIFI-BT`)
-- [PSoC&trade; 62S2 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CY8CKIT-062S2-43012) (`CY8CKIT-062S2-43012`)
-- [PSoC&trade; 62S1 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CYW9P62S1-43438EVB-01) (`CYW9P62S1-43438EVB-01`)
-- [PSoC&trade; 62S1 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CYW9P62S1-43012EVB-01) (`CYW9P62S1-43012EVB-01`)
-- [PSoC&trade; 62S3 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062S3-4343W) (`CY8CPROTO-062S3-4343W`)
-- [PSoC&trade; 64 "Secure Boot" Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CY8CKIT-064B0S2-4343W) (`CY8CKIT-064B0S2-4343W`)
-- [PSoC&trade; 62S2 Evaluation Kit](https://www.infineon.com/CY8CEVAL-062S2) (`CY8CEVAL-062S2-LAI-4373M2`, `CY8CEVAL-062S2-LAI-43439M2`, `CY8CEVAL-062S2-MUR-43439M2`, `CY8CEVAL-062S2-MUR-4373EM2`, `CY8CEVAL-062S2-MUR-4373M2`,`CY8CEVAL-062S2-CYW43022CUB` `CY8CEVAL-062S2-CYW955513SDM2WLIPA`)
+- [PSOC&trade; 62S2 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062S2-43439) (`CY8CPROTO-062S2-43439`) – Default value of `TARGET`
+- [PSOC&trade; 6 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062-4343W) (`CY8CPROTO-062-4343W`)
+- [PSOC&trade; 6 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CY8CKIT-062-WIFI-BT) (`CY8CKIT-062-WIFI-BT`)
+- [PSOC&trade; 62S2 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CY8CKIT-062S2-43012) (`CY8CKIT-062S2-43012`)
+- [PSOC&trade; 62S1 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CYW9P62S1-43438EVB-01) (`CYW9P62S1-43438EVB-01`)
+- [PSOC&trade; 62S1 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CYW9P62S1-43012EVB-01) (`CYW9P62S1-43012EVB-01`)
+- [PSOC&trade; 62S3 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062S3-4343W) (`CY8CPROTO-062S3-4343W`)
+- [PSOC&trade; 64 "Secure Boot" Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CY8CKIT-064B0S2-4343W) (`CY8CKIT-064B0S2-4343W`)
+- [PSOC&trade; 62S2 Evaluation Kit](https://www.infineon.com/CY8CEVAL-062S2) (`CY8CEVAL-062S2-LAI-4373M2`, `CY8CEVAL-062S2-LAI-43439M2`, `CY8CEVAL-062S2-MUR-43439M2`, `CY8CEVAL-062S2-MUR-4373EM2`, `CY8CEVAL-062S2-MUR-4373M2`, `CY8CEVAL-062S2-CYW43022CUB`, `CY8CEVAL-062S2-CYW955513SDM2WLIPA`)
 - [XMC7200 Evaluation Kit](https://www.infineon.com/KIT_XMC72_EVK) (`KIT_XMC72_EVK_MUR_43439M2`)
-- [PSoC&trade; 6 AI Evaluation Kit](https://www.infineon.com/CY8CKIT-062S2-AI) (`CY8CKIT-062S2-AI`)
+- [PSOC&trade; 6 AI Evaluation Kit](https://www.infineon.com/CY8CKIT-062S2-AI) (`CY8CKIT-062S2-AI`)
+
 
 ## Hardware setup
 
 This example uses the board's default configuration. See the kit user guide to ensure that the board is configured correctly.
 
-> **Note:** The PSoC&trade; 6 Bluetooth&reg; LE Pioneer Kit (CY8CKIT-062-BLE) and the PSoC&trade; 6 Wi-Fi Bluetooth&reg; Pioneer Kit (CY8CKIT-062-WIFI-BT) ship with KitProg2 installed. ModusToolbox&trade; requires KitProg3. Before using this code example, make sure that the board is upgraded to KitProg3. The tool and instructions are available in the [Firmware Loader](https://github.com/Infineon/Firmware-loader) GitHub repository. If you do not upgrade, you will see an error like "unable to find CMSIS-DAP device" or "KitProg firmware is out of date".
+> **Note:** The PSOC&trade; 6 Bluetooth&reg; LE Pioneer Kit (CY8CKIT-062-BLE) and the PSOC&trade; 6 Wi-Fi Bluetooth&reg; Pioneer Kit (CY8CKIT-062-WIFI-BT) ship with KitProg2 installed. ModusToolbox&trade; requires KitProg3. Before using this code example, make sure that the board is upgraded to KitProg3. The tool and instructions are available in the [Firmware Loader](https://github.com/Infineon/Firmware-loader) GitHub repository. If you do not upgrade, you will see an error like "unable to find CMSIS-DAP device" or "KitProg firmware is out of date".
 
 
 ## Software setup
 
 See the [ModusToolbox&trade; tools package installation guide](https://www.infineon.com/ModusToolboxInstallguide) for information about installing and configuring the tools package.
+
 Install a terminal emulator if you don't have one. Instructions in this document use [Tera Term](https://teratermproject.github.io/index-en.html).
 
-Install a Python interpreter if you do not have one. This code example is tested using [Python 3.7.7](https://www.python.org/downloads/release/python-377/).
+Install the Python interpreter if you do not have one. This code example is tested using [Python 3.7.7](https://www.python.org/downloads/release/python-377/).
 
 
 ## Using the code example
+
 
 ### Create the project
 
@@ -76,7 +81,7 @@ The ModusToolbox&trade; tools package provides the Project Creator as both a GUI
 
    > **Note:** Depending on how you open the Project Creator tool, these fields may be pre-selected for you.
 
-   b.	Select this code example from the list by enabling its check box.
+   b. Select this code example from the list by enabling its check box.
 
    > **Note:** You can narrow the list of displayed examples by typing in the filter box.
 
@@ -86,19 +91,19 @@ The ModusToolbox&trade; tools package provides the Project Creator as both a GUI
 
 </details>
 
+
 <details><summary><b>Use Project Creator CLI</b></summary>
 
 The 'project-creator-cli' tool can be used to create applications from a CLI terminal or from within batch files or shell scripts. This tool is available in the *{ModusToolbox&trade; install directory}/tools_{version}/project-creator/* directory.
 
 Use a CLI terminal to invoke the 'project-creator-cli' tool. On Windows, use the command-line 'modus-shell' program provided in the ModusToolbox&trade; installation instead of a standard Windows command-line application. This shell provides access to all ModusToolbox&trade; tools. You can access it by typing "modus-shell" in the search box in the Windows menu. In Linux and macOS, you can use any terminal application.
 
-The following example clones the "[Secure TCP Client](https://github.com/Infineon/mtb-example-wifi-secure-tcp-client)" application with the desired name "SecureTcpClient" configured for the *CY8CPROTO-062S2-43439* BSP into the specified working directory, *C:/mtb_projects*:
+The following example clones the "[Secure TCP client](https://github.com/Infineon/mtb-example-wifi-secure-tcp-client)" application with the desired name "SecureTcpClient" configured for the *CY8CPROTO-062S2-43439* BSP into the specified working directory, *C:/mtb_projects*:
 
    ```
    project-creator-cli --board-id CY8CPROTO-062S2-43439 --app-id mtb-example-wifi-secure-tcp-client --user-app-name SecureTcpClient --target-dir "C:/mtb_projects"
    ```
 
-<mark>Update the above paragraph and commands to match your CE.
 
 The 'project-creator-cli' tool has the following arguments:
 
@@ -112,7 +117,6 @@ Argument | Description | Required/optional
 > **Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; tools package user guide](https://www.infineon.com/ModusToolboxUserGuide) (locally available at {ModusToolbox&trade; install directory}/docs_{version}/mtb_user_guide.pdf).
 
 </details>
-
 
 
 ### Open the project
@@ -167,19 +171,19 @@ For more details, see the [ModusToolbox&trade; tools package user guide](https:/
 
 ## Operation
 
-If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSoC&trade; 64 device must be provisioned with keys and policies before being programmed. Follow the instructions in the ["Secure Boot" SDK user guide](https://www.infineon.com/dgdlac/Infineon-PSoC_64_Secure_MCU_Secure_Boot_SDK_User_Guide-Software-v07_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0f8c361a7666) to provision the device. If the kit is already provisioned, copy-paste the keys and policy folder to the application folder.
+If using a PSOC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSOC&trade; 64 device must be provisioned with keys and policies before being programmed. Follow the instructions in the ["Secure Boot" SDK user guide](https://www.infineon.com/dgdlac/Infineon-PSoC_64_Secure_MCU_Secure_Boot_SDK_User_Guide-Software-v07_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0f8c361a7666) to provision the device. If the kit is already provisioned, copy-paste the keys and policy folder to the application folder.
 
-**Note:**  Use `policy_single_CM0_CM4_smif_swap.json` policy instead of using the default one "policy_single_CM0_CM4_swap.json" to provision CY8CKIT-064B0S2-4343W device.
+> **Note:** Use `policy_single_CM0_CM4_smif_swap.json` policy instead of using the default one "policy_single_CM0_CM4_swap.json" to provision CY8CKIT-064B0S2-4343W device.
 
 1. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector.
 
-2. The kit can be configured to run either in the Wi-Fi STA interface mode or in the AP interface mode. The interface mode is configured using the `USE_AP_INTERFACE` macro defined in the *network_credentials.h* file. Based on the desired interface mode, do the following:
+2. The kit can be configured to run either in the Wi-Fi STA interface mode or in AP interface mode. The interface mode is configured using the `USE_AP_INTERFACE` macro defined in the *network_credentials.h* file. Based on the desired interface mode, do the following:
 
    **Kit in STA mode (default interface):**
 
    1. Set the `USE_AP_INTERFACE` macro to **0**. This is the default mode.
 
-   2. Modify the `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY_TYPE` macros to match with that of the Wi-Fi network credentials that you want to connect. These macros are defined in the *network_credentials.h* file. Ensure that the Wi-Fi network that you are connecting to is configured as a private network for the proper functioning of this example.
+   2. Modify the `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY_TYPE` macros to match with the Wi-Fi network credentials that you want to connect. These macros are defined in the *network_credentials.h* file. Ensure that the Wi-Fi network that you are connecting to is configured as a private network for the proper functioning of this example.
 
    **Kit in AP mode:**
 
@@ -243,15 +247,15 @@ If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSo
 
    ![](images/wifi-conn-status-ipv4-ap-mode.png)
 
-   Similarly, when the CE is configured for IPv6 and AP mode, the IPv4 address displayed in **Figure 3** will be replaced by the IPv6 address.
+   Similarly, when the code example is configured for IPv6 and AP mode, the IPv4 address displayed in **Figure 3** will be replaced by the IPv6 address.
 
-6. Connect your computer to the Wi-Fi AP that you have configured in **Step 2**:
+6. Connect your PC to the Wi-Fi AP that you have configured in **Step 2**:
 
-   - **In STA mode:** Connect the computer to the same AP to which the kit is connected.
+   - **In STA mode:** Connect the PC to the same AP to which the kit is connected.
 
-   - **In AP mode:** Connect the computer to the kit's AP.
+   - **In AP mode:** Connect the PC to the kit's AP.
 
-7. Determine the computer's IP address.
+7. Determine the PC's IP address.
 
    To determine the IP address, type the following command in the command shell based on your operating system:
 
@@ -261,7 +265,7 @@ If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSo
 
    macOS: `ifconfig |grep inet`
 
-8. Ensure that the Python interpreter (see [Software setup](#software-setup)) is installed on your computer.
+8. Ensure that the Python interpreter (see [Software setup](#software-setup)) is installed on your PC.
 
 9. Open a command shell from the project directory and run the Python TCP secure server (*{project directory}\python-secure-tcp-server*).
 
@@ -279,57 +283,79 @@ If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSo
      python tcp_secure_server.py ipv6
      ```
 
-     **Note:** Ensure that the firewall settings of your computer allow access to the Python software so as to allow communication with the TCP client. See this [community thread](https://community.infineon.com/thread/53662).
+    > **Note:** Ensure that the firewall settings of your PC allow access to the Python software so that it can communicate with the TCP client. For more details on enabling Python access, see this [community thread](https://community.infineon.com/thread/53662).
 
 11. In the terminal program, enter the IP address determined in **Step 7**.
 
 12. From the Python secure TCP server, send the command to turn the LED ON or OFF to the TCP client ('0' to turn the LED OFF and '1' to turn the LED ON). Observe the user LED (CYBSP_USER_LED) turning ON/OFF on the board.
 
-      **Figure 4. LED status on TCP server (IPv4 addressing mode)**
+   **Figure 4. LED status on TCP server (IPv4 addressing mode)**
 
-      ![](images/tcp-server-ipv4-output.png)
+   ![](images/tcp-server-ipv4-output.png)
 
-      <br />
+   <br>
 
-      **Figure 5. LED status on TCP client (IPv4 addressing and STA mode)**
+   **Figure 5. LED status on TCP client (IPv4 addressing and STA mode)**
 
-      ![](images/tcp-client-ipv4-output-sta-mode.png)
+   ![](images/tcp-client-ipv4-output-sta-mode.png)
 
-      <br />
+   <br>
 
-      **Figure 6. LED status on TCP client (IPv4 addressing and AP mode)**
+   **Figure 6. LED status on TCP client (IPv4 addressing and AP mode)**
 
-      ![](images/tcp-client-ipv4-output-ap-mode.png)
+   ![](images/tcp-client-ipv4-output-ap-mode.png)
 
-      <br />
+   <br>
 
-      **Figure 7. LED status on TCP server (IPv6 addressing mode)**
+   **Figure 7. LED status on TCP server (IPv6 addressing mode)**
 
-      ![](images/tcp-server-ipv6-output.png)
+   ![](images/tcp-server-ipv6-output.png)
 
-      <br />
+   <br>
 
-      **Figure 8. LED status on TCP client (IPv6 addressing and STA mode)**
+   **Figure 8. LED status on TCP client (IPv6 addressing and STA mode)**
 
-      ![](images/tcp-client-ipv6-output-sta-mode.png)
+   ![](images/tcp-client-ipv6-output-sta-mode.png)
 
 
-      When the CE is configured in AP and IPv6 mode, the only change from **Figure 4** is the IPv6 address being displayed instead of IPv4.
+   When the code example is configured in AP and IPv6 mode, the only change from **Figure 4** is the IPv6 address being displayed instead of IPv4.
 
-      **Note:** Instead of using the Python TCP server (*tcp_secure_server.py*), you can use the [mtb-example-wifi-secure-tcp-server](https://github.com/Infineon/mtb-example-wifi-secure-tcp-server) example to run as the TCP server on the second kit. See the code example documentation to learn how to use the example.
+   > **Note:** Instead of using the Python TCP server (*tcp_secure_server.py*), you can use the [mtb-example-wifi-secure-tcp-server](https://github.com/Infineon/mtb-example-wifi-secure-tcp-server) example to run as the TCP server on the second kit. See the code example documentation to learn how to use the example.
 
 If you are using the example as the server, the IP address (`TCP_SERVER_IP_ADDRESS`) configured in **Step 6** in the [Operation](#operation) section should be that of the IP address assigned to the kit in the example.
 
+
 ## Debugging
 
-You can debug the example to step through the code. In the IDE, use the **\<Application Name> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; software user guide](https://www.infineon.com/MTBEclipseIDEUserGuide).
+You can debug the example to step through the code.
+
+
+<details><summary><b>In Eclipse IDE</b></summary>
+
+Use the **\<Application Name> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; user guide](https://www.infineon.com/MTBEclipseIDEUserGuide).
 
 > **Note:** **(Only while debugging)** On the CM4 CPU, some code in `main()` may execute before the debugger halts at the beginning of `main()`. This means that some code executes twice – once before the debugger stops execution, and again after the debugger resets the program counter to the beginning of `main()`. See [KBA231071](https://community.infineon.com/docs/DOC-21143) to learn about this and for the workaround.
+
+</details>
+
+
+<details><summary><b>In other IDEs</b></summary>
+
+Follow the instructions in your preferred IDE.
+
+</details>
 
 
 ## Design and implementation
 
+
 ### Resources and settings
+
+This example uses the Arm&reg; Cortex&reg;-M4 (CM4) CPU of PSOC&trade; 6 MCU to execute an RTOS task: TCP client task. At device reset, the default Cortex&reg;-M0+ (CM0+) application enables the CM4 CPU and configures the CM0+ CPU to go to sleep.
+
+In this example, the TCP client establishes a secure connection with the TCP server through an SSL handshake. During the SSL handshake, the client presents its SSL certificate (self-signed) for verification and also verifies the server's identity to which it is connecting.
+
+Once the SSL handshake completes successfully, the TCP client controls the user LED to turn ON or OFF based on the command received from the TCP server.
 
 **Table 1. Application resources**
 
@@ -341,27 +367,25 @@ You can debug the example to step through the code. In the IDE, use the **\<Appl
 
 <br>
 
-This example uses the Arm&reg; Cortex&reg;-M4 (CM4) CPU of PSoC&trade; 6 MCU to execute an RTOS task (TCP client task). At device reset, the default Cortex&reg;-M0+ (CM0+) application enables the CM4 CPU and configures the CM0+ CPU to go to sleep.
-
-In this example, the TCP client establishes a secure connection with the TCP server through SSL handshake. During the SSL handshake, the client presents its SSL certificate (self-signed) for verification and also verifies the server's identity to which it is connecting. Once the SSL handshake completes successfully, the TCP client controls the user LED to turn ON or OFF based on the command received from the TCP server.
-
-<br>
 
 ### Creating a self-signed SSL certificate
 
-The TCP client demonstrated in this example uses a self-signed SSL certificate. This requires **OpenSSL** which is already preloaded in the ModusToolbox&trade; software installation. Self-signed SSL certificate means that there is no third-party certificate issuing authority, commonly referred to as CA, involved in the authentication of the client. Servers connecting to the this client must have an exact copy of the SSL certificate to verify the client's identity.
+The TCP client demonstrated in this example uses a self-signed SSL certificate. This requires **OpenSSL** which is already preloaded in ModusToolbox&trade;. Self-signed SSL certificate means that there is no third-party certificate issuing authority, commonly referred to as CA, involved in the authentication of the client.
 
-Do the following to generate a self-signed SSL certificate:
+> **Note:** Servers connecting to this client must have an exact copy of the SSL certificate to verify the client's identity.
 
-#### **Generate SSL certificate and private key**
 
-1. Run the following command with a CLI (on Windows, use the command line "modus-shell" program provided in the ModusToolbox&trade; installation instead of a standard Windows command-line application) to generate the CA certificate using the following commands. Follow the instructions in the command window to provide the details required.
+#### Generate SSL certificate and private key
+
+Follow these steps to generate a self-signed SSL certificate:
+
+1. Run the following command with a CLI (on Windows, use the command line **modus-shell** program provided in ModusToolbox&trade; instead of a standard Windows command-line application) to generate the CA certificate using the following commands. Follow the instructions in the command window to provide the details required.
    ```
    openssl ecparam -name prime256v1 -genkey -noout -out root_ca.key
    openssl req -new -x509 -sha256 -key root_ca.key -out root_ca.crt -days 1000
    ```
 
-2. Generate the client key pair and client certificate (signed using the CA certificate from Step 1). Follow the instructions in the command window to provide the details required.
+2. Generate the client key pair and client certificate (signed using the CA certificate from **Step 1**). Follow the instructions in the command window to provide the details required.
 
    ```
    openssl ecparam -name prime256v1 -genkey -noout -out client.key
@@ -369,29 +393,29 @@ Do the following to generate a self-signed SSL certificate:
    openssl x509 -req -in client.csr -CA root_ca.crt -CAkey root_ca.key -CAcreateserial -out client.crt -days 1000 -sha256
    ```
 
-3. Follow the instructions in the command window to provide the details required for creating SSL certificate and private key.
+3. Follow the instructions in the command window to provide the details required for creating the SSL certificate and private key.
 
-The *client.crt* file is your client's certificate and *client.key* is your client's private key.
+   > **Note:** The *client.crt* file is your client's certificate and *client.key* is your client's private key.
+
 
 ## Related resources
 
 Resources  | Links
 -----------|----------------------------------
-Application notes  | [AN228571](https://www.infineon.com/AN228571) – Getting started with PSoC&trade; 6 MCU on ModusToolbox&trade; software <br />  [AN215656](https://www.infineon.com/AN215656) – PSoC&trade; 6 MCU: Dual-CPU system design <br /> [AN79953](https://www.infineon.com/AN79953) – Getting started with PSoC&trade; 4 <br />  [AN85951](https://www.infineon.com/AN85951) – PSoC&trade; 4 and PSoC&trade; 6 MCU CAPSENSE&trade; design guide
-Code examples  | [Using ModusToolbox&trade;](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub <br /> [Using PSoC&trade; Creator](https://www.infineon.com/cms/en/design-support/software/code-examples/psoc-3-4-5-code-examples-for-psoc-creator)
-Device documentation | [PSoC&trade; 6 MCU datasheets](https://documentation.infineon.com/html/psoc6/bnm1651211483724.html) <br /> [PSoC&trade; 6 technical reference manuals](https://documentation.infineon.com/html/psoc6/zrs1651212645947.html)<br /> [PSoC&trade; 4 datasheets](https://www.infineon.com/cms/en/search.html?intc=searchkwr-return#!view=downloads&term=psoc%204&doc_group=Data%20Sheet) <br />[PSoC&trade; 4 technical reference manuals](https://www.infineon.com/cms/en/search.html#!term=psoc%204%20technical%20reference%20manual&view=all)
+Application notes  | [AN228571](https://www.infineon.com/AN228571) – Getting started with PSOC&trade; 6 MCU on ModusToolbox&trade; <br>  [AN215656](https://www.infineon.com/AN215656) – PSOC&trade; 6 MCU: Dual-CPU system design
+Code examples | [Using ModusToolbox&trade;](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub
+Device documentation | [PSOC&trade; 6 MCU datasheets](https://documentation.infineon.com/html/psoc6/bnm1651211483724.html) <br> [PSOC&trade; 6 technical reference manuals](https://documentation.infineon.com/html/psoc6/zrs1651212645947.html)
 Development kits | Select your kits from the [Evaluation board finder](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board).
-Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/Infineon/mtb-pdl-cat1) – PSoC&trade; 6 Peripheral Driver Library (PDL)  <br> [mtb-hal-cat1](https://github.com/Infineon/mtb-hal-cat1) – Hardware Abstraction Layer (HAL) library <br> [retarget-io](https://github.com/Infineon/retarget-io) – Utility library to retarget STDIO messages to a UART port <br>  [mtb-pdl-cat2](https://github.com/Infineon/mtb-pdl-cat2) – PSoC&trade; 4 Peripheral Driver Library (PDL) <br>  [mtb-hal-cat2](https://github.com/Infineon/mtb-hal-cat2) – Hardware Abstraction Layer (HAL) library
-Middleware on GitHub  | [capsense](https://github.com/Infineon/capsense) – CAPSENSE&trade; library and documents <br /> [psoc6-middleware](https://github.com/Infineon/modustoolbox-software#psoc-6-middleware-libraries) – Links to all PSoC&trade; 6 MCU middleware
-Tools  | [Eclipse IDE for ModusToolbox&trade;](https://www.infineon.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth&reg; connectivity devices. <br /> [PSoC&trade; Creator](https://www.infineon.com/cms/en/design-support/tools/sdk/psoc-software/psoc-creator/) – IDE for PSoC&trade; and FM0+ MCU development
+Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/Infineon/mtb-pdl-cat1) – PSOC&trade; 6 Peripheral Driver Library (PDL)  <br> [mtb-hal-cat1](https://github.com/Infineon/mtb-hal-cat1) – Hardware Abstraction Layer (HAL) Library <br> [retarget-io](https://github.com/Infineon/retarget-io) – Utility library to retarget STDIO messages to a UART port
+Middleware on GitHub  |  [psoc6-middleware](https://github.com/Infineon/modustoolbox-software#psoc-6-middleware-libraries) – Links to all PSOC&trade; 6 MCU middleware
+Tools  | [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use libraries and tools enabling rapid development with Infineon MCUs for applications ranging from wireless and cloud-connected systems, edge AI/ML, embedded sense and control, to wired USB connectivity using PSOC&trade; Industrial/IoT MCUs, AIROC&trade; Wi-Fi and Bluetooth&reg; connectivity devices, XMC&trade; Industrial MCUs, and EZ-USB&trade;/EZ-PD&trade; wired connectivity controllers. ModusToolbox&trade; incorporates a comprehensive set of BSPs, HAL, libraries, configuration tools, and provides support for industry-standard IDEs to fast-track your embedded application development.
 
 <br>
+
 
 ## Other resources
 
 Infineon provides a wealth of data at [www.infineon.com](https://www.infineon.com) to help you select the right device, and quickly and effectively integrate it into your design.
-
-For PSoC&trade; 6 MCU devices, see [How to design with PSoC&trade; 6 MCU - KBA223067](https://community.infineon.com/docs/DOC-14644) in the Infineon Developer community.
 
 
 ## Document history
@@ -401,12 +425,12 @@ Document title: *CE229252* - *Secure TCP client*
  Version | Description of change
  ------- | ---------------------
  1.0.0   | New code example
- 1.1.0   | Updated for ModusToolbox&trade; 2.1. <br>Code updated to use secure sockets and Wi-Fi connection manager libraries.
- 1.2.0   | Makefile updated to sync with BSP changes. <br>Code updated to use binary semaphore.
- 1.3.0   | Updated to add link-local IPv6 support.
+ 1.1.0   | Updated for ModusToolbox&trade; 2.1 <br>Code updated to use secure sockets and Wi-Fi connection manager libraries
+ 1.2.0   | Makefile updated to sync with BSP changes <br>Code updated to use binary semaphore
+ 1.3.0   | Updated to add link-local IPv6 support
  2.0.0   | Major update to support ModusToolbox&trade; v2.2, added support for new kits<br>Added soft AP Wi-Fi interface mode<br> This version is not backward compatible with ModusToolbox&trade; software v2.1.<br> Updated to support FreeRTOS v10.3.1
- 2.1.0   | Updated to FreeRTOS v10.4.3 <br> Added support for new kits |
- 3.0.0   | Updated to support ModusToolbox&trade; v2.4 <br> Added support for new kits <br> Updated the BSPs to v3.X |
+ 2.1.0   | Updated to FreeRTOS v10.4.3 <br> Added support for new kits
+ 3.0.0   | Updated to support ModusToolbox&trade; v2.4 <br> Added support for new kits <br> Updated the BSPs to v3.X
  4.0.0   | Major update to support ModusToolbox&trade; v3.0 and BSPs v4.X. This version is not backward compatible with previous versions of ModusToolbox&trade;
  4.1.0   | Added support for CY8CKIT-064B0S2-4343W
  4.2.0   | Added support for CY8CEVAL-062S2-LAI-43439M2
@@ -417,7 +441,9 @@ Document title: *CE229252* - *Secure TCP client*
  4.7.0   | Added support for CY8CKIT-062S2-AI
  4.8.0   | Added support for CY8CEVAL-062S2-CYW955513SDM2WLIPA
  4.8.1   | Disabled D-cache for XMC7000 based BSPs
+ 4.9.0   | Updated Python script to filter input data <br> Enabled D-cache support for XMC7000 devices
 <br>
+
 
 All referenced product or service names and trademarks are the property of their respective owners.
 
